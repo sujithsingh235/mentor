@@ -1,0 +1,24 @@
+	<!-- Modal Box -->
+	<div class="modal fadex" id="myModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<!--Modal Header -->
+				<div class="modal-header">
+					<h5 class="text-danger">{{ response.response_heading }}</h5>
+					<button type="button" class="close" data-dismiss="modal">&times</button>
+				</div>
+				<div class="modal-body">
+					<p class="text-secondary">{{ response.response_text  }}</p>
+				</div>
+			</div>
+		</div>
+	</div>
+
+<!-- this script is required to display la modalbox  -->
+<!-- <script type="text/javascript">
+	$(document).ready(function(){
+		{% if response.response_text != "" %}
+		$('#myModal').modal('toggle')
+		{% endif %}
+	});
+</script> -->

@@ -1,0 +1,10 @@
+<!-- Part of the search_mentor.html -->
+
+{% for x in data %}
+<div class="col-3 bg-light m-3 p-3">
+	<h4>{{ x.name }}</h4>
+	<h5>{{ x.occupation }} at {{ x.company_name }}</h5>
+	<p>Field : {{ x.field__field_name }}<br>Sub field : {{ x.sub_field__sub_field_name }}</p>
+	<a class="stretched-link" href="/search_mentor/mentor_detail/{{ x.id }}/"></a>
+</div>
+{% endfor %}

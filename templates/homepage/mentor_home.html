@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h2>Mentor Home</h2>
+<h4> hello {{ data.name }} </h4>
+
+<a class="btn btn-primary" href="/logout/">Logout</a>
+
+<div class="container">
+	<div class="row">
+		<div class="col">
+			<ul class="list-group">
+				<a class="list-group-item list-group-item-action" href="#">My Mentees</a>
+				<a class="list-group-item list-group-item-action" href="/my_requests/">Requests</a>
+				<a class="list-group-item list-group-item-action" href="#">My details</a>
+			</ul>
+		</div>
+	</div>
+</div>
+
+{% endblock %}

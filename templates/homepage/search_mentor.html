@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h3>Mentor Search</h3>
+
+<h4> hello {{ data.name }} </h4>
+
+<div class="container">
+	<div class="row" id="mentor_list">
+	</div>
+</div>
+{% csrf_token %}
+<script type="text/javascript">
+	$(document).ready(function(){
+		var field_value = null;
+		$.ajax({
+			url: "/search_mentor/",
+			type: "POST",
+			data: { csrfmiddlewaretoken: $('input:hidden').val(), field: field_value },
+			success: function(data){
+				// $('#mentor_name').text(data.name);
+				// $('#occupation').text(data.occupation);
+				$('#mentor_list').append(data);
+			}
+		});
+	});
+</script>
+
+{% endblock %}

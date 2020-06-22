@@ -1,0 +1,478 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"val",
+				"value_change"
+			],
+			[
+				"type",
+				"type2"
+			],
+			[
+				"form-",
+				"form-group"
+			],
+			[
+				"col-md",
+				"col-md-6"
+			],
+			[
+				"opt",
+				"option\tTag"
+			],
+			[
+				"op",
+				"option\tTag"
+			],
+			[
+				"form",
+				"form-control"
+			],
+			[
+				"img",
+				"img-fluid"
+			],
+			[
+				"btn-",
+				"btn-primary"
+			],
+			[
+				"card",
+				"card-header"
+			],
+			[
+				"container",
+				"container-fluid"
+			],
+			[
+				"te",
+				"text-white"
+			],
+			[
+				"cnta",
+				"container-fluid"
+			],
+			[
+				"e",
+				"e"
+			],
+			[
+				"ac",
+				"action\tAttr"
+			],
+			[
+				"ov",
+				"overflow\tproperty"
+			],
+			[
+				"wid",
+				"width\tproperty"
+			],
+			[
+				"border-righ",
+				"border-right-width\tproperty"
+			],
+			[
+				"bordr",
+				"border-right-color\tproperty"
+			],
+			[
+				"wi",
+				"width\tproperty"
+			],
+			[
+				"back",
+				"background-size\tproperty"
+			],
+			[
+				"co",
+				"cover\tbackground-size"
+			],
+			[
+				"sweets",
+				"SWEETS"
+			],
+			[
+				"tex",
+				"text-decoration\tproperty"
+			],
+			[
+				"sili",
+				"similar_pro_a"
+			],
+			[
+				"fle",
+				"flex-grow\tproperty"
+			],
+			[
+				"fl",
+				"flex\tproperty"
+			],
+			[
+				"over",
+				"overflow-y\tproperty"
+			],
+			[
+				"no",
+				"normal\twhite-space"
+			],
+			[
+				"overf",
+				"overflow-y\tproperty"
+			],
+			[
+				"inn",
+				"innerHTML"
+			],
+			[
+				"simil",
+				"similar_pro_price"
+			],
+			[
+				"simila",
+				"similar_pro_name"
+			],
+			[
+				"sil",
+				"similar_pro_template"
+			],
+			[
+				"c",
+				"cover\tbackground-size"
+			],
+			[
+				"sa",
+				"savories"
+			],
+			[
+				"min",
+				"min-width\tproperty"
+			],
+			[
+				"inli",
+				"inline-block\tdisplay"
+			],
+			[
+				"lis",
+				"list"
+			],
+			[
+				"i",
+				"i"
+			],
+			[
+				"met",
+				"meta\tTag"
+			],
+			[
+				"new",
+				"new_pic"
+			],
+			[
+				"__",
+				"__name__"
+			],
+			[
+				"re",
+				"request"
+			],
+			[
+				"dream",
+				"dreaming"
+			],
+			[
+				"ge",
+				"GET"
+			],
+			[
+				"font",
+				"font-size\tproperty"
+			],
+			[
+				"onke",
+				"onkeyup\tAttr"
+			],
+			[
+				"pa",
+				"pattern\tAttr"
+			],
+			[
+				"get",
+				"getElementById"
+			],
+			[
+				"DOB",
+				"dob"
+			],
+			[
+				"mar",
+				"margin\tproperty"
+			],
+			[
+				"margin",
+				"margin-left\tproperty"
+			],
+			[
+				"text",
+				"text-align\tproperty"
+			],
+			[
+				"t",
+				"type\tAttr"
+			],
+			[
+				"bor",
+				"border-color\tproperty"
+			],
+			[
+				"max-",
+				"max-width\tproperty"
+			],
+			[
+				"bag",
+				"background-color\tproperty"
+			],
+			[
+				"col",
+				"color\tproperty"
+			],
+			[
+				"key",
+				"key"
+			],
+			[
+				"user",
+				"username"
+			],
+			[
+				"my",
+				"mycursor"
+			],
+			[
+				"ret",
+				"return"
+			],
+			[
+				"m",
+				"modal-content"
+			],
+			[
+				"p",
+				"Password"
+			],
+			[
+				"in",
+				"input\tTag"
+			],
+			[
+				"d",
+				"display"
+			],
+			[
+				"di",
+				"div\tTag"
+			],
+			[
+				"st",
+				"style\tTag"
+			]
+		]
+	},
+	"buffers":
+	[
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"console":
+	{
+		"height": 157.0,
+		"history":
+		[
+			"run"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/F/Hariesh/css/bootstrap/home.html",
+		"/C/Users/Welcome/AppData/Local/Temp/Rar$DIa0.740/mongo_client.py",
+		"/C/Users/Welcome/AppData/Local/Temp/Rar$DIa0.912/__init__.py",
+		"/F/Hariesh/django/flask/project/templates/signup.html",
+		"/F/Hariesh/ecom/development/templates/myprofile.html",
+		"/F/Hariesh/ecom/development/templates/adminproducts.html",
+		"/F/Hariesh/python_files/temp.py",
+		"/F/Hariesh/django/project/venv/trydjango/urls.py",
+		"/F/Hariesh/django/project/venv/pro/admin.py",
+		"/F/Hariesh/django/project/venv/pro/models.py",
+		"/F/Hariesh/django/project/venv/trydjango/settings.py",
+		"/F/Hariesh/django/project/venv/manage.py",
+		"/F/Hariesh/django/project/venv/trydjango/wsgi.py",
+		"/F/Hariesh/mongo/mongodb.py",
+		"/F/Hariesh/hashing/hash_file.py",
+		"/F/Hariesh/django/project/src/trydjango/trydjango/settings.py",
+		"/F/Hariesh/css/alexa.py",
+		"/F/Hariesh/hashing/tk.py",
+		"/C/YOGISOFT/TC/BIN/CLIPPING.CPP",
+		"/C/YOGISOFT/TC/BIN/2D.CPP",
+		"/C/YOGISOFT/TC/BIN/CIRCLE.CPP",
+		"/C/YOGISOFT/TC/BIN/DDL.CPP",
+		"/C/YOGISOFT/TC/BIN/circle.CPP",
+		"/C/YOGISOFT/TC/BIN/clipping.CPP",
+		"/F/Hariesh/program/cg/DDL.CPP",
+		"/F/Hariesh/django/flask/project/templates/uploads.html",
+		"/F/Hariesh/django/flask/project/templates/hello.html",
+		"/F/Hariesh/sparkle/temp.py",
+		"/F/Hariesh/anaconda/Lib/site-packages/mega/mega.py",
+		"/F/Hariesh/django/infinite/mega.py",
+		"/F/Hariesh/django/flask/project/static/java script/hello.js",
+		"/D/vaahini/VAAHINIEXE_1309/Accounts.exe",
+		"/F/Hariesh/program/c++/finalgame.cpp",
+		"/F/Hariesh/program/c++/game.cpp",
+		"/F/Hariesh/django/flask/project/alt.py",
+		"/F/Hariesh/django/flask/project/templates/index.html",
+		"/F/Hariesh/django/flask/project/app.py"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 0.0,
+		"where_history":
+		[
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": true
+	},
+	"groups":
+	[
+		{
+			"sheets":
+			[
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 71.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "",
+	"project": "settings.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": true,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

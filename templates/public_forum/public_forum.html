@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+
+<h3 class="text-secondary">public forum</h3>
+
+<div class="container">
+	<form method="POST" novalidate="true">
+		{% csrf_token %}
+		{{ form|crispy }}
+		<div class="col" id="tags"></div>
+		<input type="text" name="tag" id="tag_field">
+		<button class="btn btn-secondary" type=button id="add_tag">Add</button>
+		<input class="btn btn-success" type="submit" name="submit">
+	</form>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		$('#add_tag').click(function(){
+			$tag_field=$('#tag_field').val();
+			$('#tags').append(" <span class='badge badge-secondary'>"+$tag_field+"</span>");
+			$('#id_unnknown').append("<option value='3' selected>"+$tag_field+"</option>");
+			alert('cone');
+		});
+	});
+</script>
+
+{% endblock %}

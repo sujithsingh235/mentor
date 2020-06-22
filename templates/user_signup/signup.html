@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="container">
+	<form method="POST" novalidate>
+		{% csrf_token %}
+		{{ form|crispy }}
+	<input class="btn btn-primary" type="submit" name="submit" value="submit">
+	</form>
+</div>
+<script type="text/javascript">
+	$(document).ready(function(){
+		// Ajax request for change in field value
+		$('#id_field').change(function(){
+			var field = $(this).val();
+			$.ajax({
+				url: "/sub_field/",
+				type: "GET",
+				data : {
+					'field' : field
+				},
+				success : function(data){
+					$('#id_sub_field').html(data);
+				}
+			});
+		});
+	});
+</script>
+{% endblock %}
