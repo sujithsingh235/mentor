@@ -1,15 +1,18 @@
 {% extends 'base.html' %}
 
-{% load crispy_forms_tags %}
-
 {% block content %}
 
 <center><h2> Public forum</h2></center>
 <ul>
-	<li><a href="./create_new_question">new question</a></li>
+	<li><a href="./create_new_question">
+		new question
+	</a></li>
 	{% for question in questions %}
-	<li>{{question.question}}</li>
-	<li>{{question.description}}</li>
+	<li><a href=./{{question.id}}>
+		{{question.question}}</a></br>
+		User:{{question.user}}</br>
+		Time:{{question.posted_time}}
+	</li>
 	{% endfor %}
 </ul>
 

@@ -5,6 +5,10 @@
 {% block content %}
 
 <center><h2> New question page</h2></center>
-
-
+<form action="" method="POST">
+    {% csrf_token %}
+    <input type="text" placeholder="Question" name="question">
+    <input type="textarea" placeholder="Description" name="desc">
+    <input type="submit" >
+</form>
 {% endblock %}

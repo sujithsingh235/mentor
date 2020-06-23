@@ -4,4 +4,5 @@ from .views import *
 urlpatterns = [
     path('',public_forum_view),
     path('create_new_question',new_question_view),
+    path('<int:id>',question_brief_view),
 ]
