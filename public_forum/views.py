@@ -1,14 +1,16 @@
 from django.shortcuts import render
+from .models import question
 
 from .forms import question_form
 
 # Create your views here.
 
 def public_forum_view(request):
-	my_form = question_form(request.POST or None)
-	if my_form.is_valid():
-		print(my_form.cleaned_data)
+	questions = question.objects.all()
 	context = {
-		'form' : my_form
+		'questions' : questions
 	}
 	return render(request,'public_forum/public_forum.html',context)
+
+def new_question_view(request):
+	return render(request,'public_forum/create_new_question.html')
