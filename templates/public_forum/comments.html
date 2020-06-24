@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <center><h2>Comment's page</h2></center>
+    <h2>Comments</h2>
+    {% if exist %}
+        {% for comment in comments %}
+            <h6>{{comment.comment}}</h6>
+            <p>Posted by: {{comment.user}}</p>
+            <p>Posted time: {{comment.posted_time}}</p>
+        {% endfor %}    
+    {% else %}
+        <h4>No comments</h4>
+    {% endif %}
+    <form method="POST">
+        {% csrf_token %}
+        <textarea required="required" name="comment" rows=10 cols=40 placeholder="Enter your comments here....."></textarea></br>
+        <input type="submit">
+    </form>
+{% endblock %}

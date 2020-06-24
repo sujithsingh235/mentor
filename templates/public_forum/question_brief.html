@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<!-- This page will show a detailed view of a question and its answers-->
+<h2>Question</h2>
+    <h6>{{question.question}}</h6>
+    <p>{{question.description}}</p>
+    <a href="./write_answer/{{question.id}}" class="btn btn-success">Add an answer</a>
+<h2>Answers</h2>
+    {% if exist %}
+        {% for answer,no_of_comments in answers %}
+            <h6>{{answer.answer}}</h6>
+            <p>Posted by: {{answer.user}}</p>
+            <p>Posted time: {{answer.posted_time}}</p>
+            <a href="./comments/{{answer.id}}" class="btn btn-success">comments
+                <span class="badge badge-light">{{no_of_comments}}</span>     <!--number of comments-->
+            </a>
+            {% if answer.user == current_user %}
+                <a href="/public/forum/edit_answer/{{answer.id}}/{{question.id}}">edit</a>  <!--The user can edit his answers-->
+            {% endif %}
+        {% endfor %}    
+    {% else %}
+        <h4>No answers</h4>
+    {% endif %}
+
+{% endblock %}

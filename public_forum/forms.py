@@ -1,6 +1,4 @@
 from django import forms
 
-class question_form(forms.Form):
-	question = forms.CharField()
-	CHOICES = ((1,'a'),(2,'b'),(3,'a'))
-	unnknown = forms.MultipleChoiceField(choices=CHOICES)
+class answers_form(forms.Form):
+    ans = forms.CharField(label="Enter your answer:" ,widget = forms.Textarea())
