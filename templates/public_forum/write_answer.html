@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<center><h2>Write answer page</h2></center>
+<h2>{{question.question}}</h2>
+<p>{{question.description}}</p>
+<form action="" method="POST">
+    {% csrf_token %}
+    <textarea name="ans" required="required" rows=10 cols=30 placeholder="{{placeholder}}">{{text}}</textarea>
+    <input type = "submit">
+</form>
+
+{% endblock %}

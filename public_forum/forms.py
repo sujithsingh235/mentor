@@ -1,9 +1,4 @@
 from django import forms
 
-#class new_question_form(forms.modelForm):
-#	class meta:
-#		model = questions
-#		fields = [
-#			'question',
-#			'description'
-#		]
+class answers_form(forms.Form):
+    ans = forms.CharField(label="Enter your answer:" ,widget = forms.Textarea())

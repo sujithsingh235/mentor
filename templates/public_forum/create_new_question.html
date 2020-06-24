@@ -4,11 +4,11 @@
 
 {% block content %}
 
-<center><h2> New question page</h2></center>
+<center><h2> New question page</h2></center><!-- here the user will enter his new question-->
 <form action="" method="POST">
     {% csrf_token %}
-    <input type="text" placeholder="Question" name="question">
-    <input type="textarea" placeholder="Description" name="desc">
+    <input type="text" placeholder="Question" name="question" required="required"></br>
+    <textarea placeholder="Description" name="desc" required="required" rows=20 cols=50></textarea></br>
     <input type="submit" >
 </form>
 {% endblock %}

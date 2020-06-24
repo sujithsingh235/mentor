@@ -5,15 +5,19 @@
 <center><h2> Public forum</h2></center>
 <ul>
 	<li><a href="./create_new_question">
-		new question
+		new question  <!-- when the user wants to ask a question, he will click this one-->
 	</a></li>
-	{% for question in questions %}
-	<li><a href=./{{question.id}}>
-		{{question.question}}</a></br>
-		User:{{question.user}}</br>
-		Time:{{question.posted_time}}
-	</li>
-	{% endfor %}
+	{% if exist %}
+		{% for question in questions %}  <!--already asked questions sorted descending by posted time-->
+			<li><a href=./{{question.id}}>
+				{{question.question}}</a></br>
+				User:{{question.user}}</br>
+				Time:{{question.posted_time}}
+			</li>
+		{% endfor %}	
+	{% else %}
+		<h2>No questions</h2>
+	{% endif %}
 </ul>
 
 {% endblock %}
