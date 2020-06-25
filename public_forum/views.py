@@ -62,6 +62,8 @@ def question_brief_view(request,id):
 
 def write_answer_view(request,id):
 	if request.method == 'GET':
+		if not request.user.is_authenticated:
+			return redirect('user_login')
 		question = questions.objects.get(id=id)
 		context = {
 			'question' : question,
@@ -104,7 +106,12 @@ def comments_view(request,id):
 
 def edit_answer_view(request,id,question_id):
 	if request.method == "GET":
-		text = answers.objects.get(id=id).answer
+		ans = answers.objects.get(id=id)  
+		if not request.user.is_authenticated:
+			return redirect('user_login')
+		elif str(request.user) != ans.user:
+			return redirect('/')
+		text = ans.answer
 		context = {
 			'text' : text
 		}
@@ -121,6 +128,14 @@ def edit_answer_view(request,id,question_id):
 def delete_answer_view(request):
 	answer_id = request.GET.get('answer_id')
 	question_id = request.GET.get('question_id')
-	answers.objects.filter(id=answer_id).delete()
-	comments.objects.filter(answer_id=answer_id).delete()
-	return redirect('/public/forum/'+str(question_id))
+	answer = answers.objects.get(id=answer_id)
+	comment = comments.objects.filter(answer_id=answer_id)
+	user = answer.user
+	if not request.user.is_authenticated:
+		return redirect('user_login')
+	elif str(request.user) != user:
+		return redirect('/')
+	else:
+		answer.delete()
+		comment.delete()
+		return redirect('/public/forum/'+str(question_id))
