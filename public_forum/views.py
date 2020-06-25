@@ -42,7 +42,6 @@ def question_brief_view(request,id):
 	answer = answers.objects.filter(question_id = id).order_by('-posted_time') 
 	list_of_answers = []
 	current_user = str(request.user)
-	print(type(current_user))
 	if len(answer) != 0:
 		exist = True
 		for ans in answer:		# This will count the number of comments
@@ -114,4 +113,14 @@ def edit_answer_view(request,id,question_id):
 	ans.answer = request.POST.get('ans')
 	ans.posted_time = datetime.datetime.now()
 	ans.save()
+	return redirect('/public/forum/'+str(question_id))
+
+
+
+
+def delete_answer_view(request):
+	answer_id = request.GET.get('answer_id')
+	question_id = request.GET.get('question_id')
+	answers.objects.filter(id=answer_id).delete()
+	comments.objects.filter(answer_id=answer_id).delete()
 	return redirect('/public/forum/'+str(question_id))
