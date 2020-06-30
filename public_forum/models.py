@@ -18,3 +18,9 @@ class comments(models.Model):  # Comments for the answers in the public forum
     user = models.CharField(max_length=25)
     posted_time = models.DateTimeField()
     comment = models.CharField(max_length=100)
+
+class like(models.Model): # To Generate the like status of particular user and count the number of likes for an answer
+    user = models.CharField(max_length=25)
+    answer_id = models.IntegerField()
+    like_status = models.CharField(max_length=10)
+
