@@ -4,7 +4,7 @@ import datetime
 from django.http import HttpResponse
 from .forms import answers_form
 
-#from .forms import new_question_form
+# from .forms import new_question_form
 
 # Create your views here.
 
@@ -24,6 +24,9 @@ def public_forum_view(request):
 
 def new_question_view(request):
     if request.method == "GET":
+        user = request.session.get('username', 'null')
+        if user == 'null':
+            return redirect('user_login')
         return render(request, 'public_forum/create_new_question.html')
     question = questions()
     question.question = request.POST.get('question')
@@ -38,7 +41,7 @@ def question_brief_view(request, id):
     question = questions.objects.get(id=id)
     answer = answers.objects.filter(question_id=id).order_by('-posted_time')
     list_of_answers = []
-    current_user = str(request.session.get('username', 'null'))
+    current_user = request.session.get('username', 'null')
     if len(answer) != 0:
         exist = True
         for ans in answer:		# This will count the number of comments
@@ -86,17 +89,18 @@ def comments_view(request, id):
         new_comment = comments(
             user=user, posted_time=posted_time, comment=comment, answer_id=id)
         new_comment.save()
-
-    comment = comments.objects.filter(answer_id=id).order_by('-posted_time')
-    if len(comment) != 0:
-        exist = True
-    else:
-        exist = False
-    context = {
-        'comments': comment,
-        'exist': exist
-    }
-    return render(request, "public_forum/comments.html", context)
+    elif request.method == 'POST':
+        comment = comments.objects.filter(
+            answer_id=id).order_by('-posted_time')
+        if len(comment) != 0:
+            exist = True
+        else:
+            exist = False
+        context = {
+            'comments': comment,
+            'exist': exist
+        }
+        return render(request, "public_forum/comments.html", context)
 
 
 def edit_answer_view(request, id, question_id):
@@ -112,11 +116,12 @@ def edit_answer_view(request, id, question_id):
             'text': text
         }
         return render(request, "public_forum/write_answer.html", context)
-    ans = answers.objects.get(id=id)
-    ans.answer = request.POST.get('ans')
-    ans.posted_time = datetime.datetime.now()
-    ans.save()
-    return redirect('/public/forum/'+str(question_id))
+    elif request.method == 'POST':
+        ans = answers.objects.get(id=id)
+        ans.answer = request.POST.get('ans')
+        ans.posted_time = datetime.datetime.now()
+        ans.save()
+        return redirect('/public/forum/'+str(question_id))
 
 
 def delete_answer_view(request):
