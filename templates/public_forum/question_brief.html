@@ -8,7 +8,7 @@
     <a href="./write_answer/{{question.id}}" class="btn btn-success">Add an answer</a>
 <h2>Answers</h2>
     {% if exist %}
-        {% for answer,no_of_comments in answers %}
+        {% for answer,no_of_comments,no_of_likes,liked_users in answers %}
             <h6>{{answer.answer}}</h6>
             <p>Posted by: {{answer.user}}</p>
             <p>Posted time: {{answer.posted_time}}</p>
@@ -24,7 +24,16 @@
                 <input type="hidden" name="user" value="{{current_user}}">
                 <input type="hidden" name="answer_id" value="{{answer.id}}">
                 <input type="hidden" name="question_id" value="{{question.id}}">
-                <input type="submit" value="Like">
+                {% if current_user != answer.user %}<!--The like option should not be available for the creator of that answer-->
+                    {% if current_user not in liked_users %}
+                        <input type="hidden" name="status" value="like"> <!--This denotes that the user likes the question-->
+                        <input type="submit" value="Like"><!--like button. The user didnt like this answer yet.-->
+                    {% else %}    
+                        <input type="hidden" name="status" value="rlike"><!--rlike means removing the like-->
+                        <input type="submit" value="Liked"><!--active like button.Because The user already liked this answer.-->
+                    {% endif %}
+                {% endif%}
+                <span class="badge">{{no_of_likes}}</span>
             </form>
         {% endfor %}    
     {% else %}

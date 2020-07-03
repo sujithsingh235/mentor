@@ -39,14 +39,19 @@ def new_question_view(request):
 
 def question_brief_view(request, id):
     question = questions.objects.get(id=id)
-    answer = answers.objects.filter(question_id=id).order_by('-posted_time')
+    answer = answers.objects.filter(question_id=id).order_by('-like')
     list_of_answers = []
     current_user = request.session.get('username', 'null')
     if len(answer) != 0:
         exist = True
-        for ans in answer:		# This will count the number of comments
-            count = comments.objects.filter(answer_id=ans.id).count()
-            new_tuple = (ans, count)
+        for ans in answer:		# This will count the number of comments and likes
+            comments_count = comments.objects.filter(answer_id=ans.id).count()
+            dict_liked_users = list(like.objects.filter(answer_id = ans.id).values('user')) # This will return a list of dictionaries. So we have to convert it as a list of likes_users.
+            liked_users = []
+            for user in dict_liked_users:
+                liked_users.append(user['user'])
+            likes_count = like.objects.filter(answer_id=ans.id).count()
+            new_tuple = (ans, comments_count, likes_count,liked_users)
             list_of_answers.append(new_tuple)
     else:
         exist = False
@@ -54,7 +59,7 @@ def question_brief_view(request, id):
         'question': question,
         'answers': list_of_answers,
         'exist': exist,
-        'current_user': current_user
+        'current_user': current_user,
     }
     return render(request, 'public_forum/question_brief.html', context)
 
@@ -75,7 +80,7 @@ def write_answer_view(request, id):
         posted_time = datetime.datetime.now()
         ans = request.POST.get('ans')
         answer = answers(question_id=id, answer=ans,
-                         user=user, posted_time=posted_time)
+                         user=user, posted_time=posted_time,like=0)
         answer.save()
         return redirect("/public/forum/" + str(id))
 
@@ -142,10 +147,27 @@ def delete_answer_view(request):
 
 
 def like_view(request):
+    current_user = request.session.get('username','null')
+    if current_user == 'null':
+        return redirect('user_login')
     user = request.POST.get('user')
     answer_id = request.POST.get('answer_id')
     question_id = request.POST.get('question_id')
-    print(question_id)
-    new_like = like(user=user, answer_id=answer_id, like_status="liked")
-    new_like.save()
+    status = request.POST.get('status')
+    if status == 'like':
+        new_like = like(user=user, answer_id=answer_id)
+        new_like.save()
+        ans_obj = answers.objects.get(id=answer_id)
+        like_count = ans_obj.like + 1
+        print(like_count)
+        ans_obj.like = like_count
+        ans_obj.save()
+    elif status == "rlike":   # rlike means removing the like
+        l = like.objects.get(user=user,answer_id=answer_id)
+        l.delete()
+        ans_obj = answers.objects.get(id=answer_id)
+        like_count = ans_obj.like - 1
+        print(like_count)
+        ans_obj.like = like_count
+        ans_obj.save()
     return redirect('/public/forum/'+str(question_id))
