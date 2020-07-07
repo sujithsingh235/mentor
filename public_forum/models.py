@@ -24,3 +24,7 @@ class like(models.Model): # To Generate the like status of particular user and c
     user = models.CharField(max_length=25)
     answer_id = models.IntegerField()
 
+class favourite(models.Model):
+    user = models.CharField(max_length=25)
+    question_id = models.IntegerField()
+

@@ -3,8 +3,22 @@
 {% block content %}
 <!-- This page will show a detailed view of a question and its answers-->
 <h2>Question</h2>
+
+
+    <script type="text/javascript">
+        function hello()
+        {
+            var x = new XMLHttpRequest();
+            x.open('GET','/public/forum/fav?question_id={{question.id}}',true);
+            x.send();
+        }
+    </script>
     <h6>{{question.question}}</h6>
     <p>{{question.description}}</p>
+    <button type="button" onclick="hello()">favourite</button>
+
+
+
     <a href="./write_answer/{{question.id}}" class="btn btn-success">Add an answer</a>
 <h2>Answers</h2>
     {% if exist %}
@@ -42,4 +56,5 @@
    
 
 {% endblock %}
+
 

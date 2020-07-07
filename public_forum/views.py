@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import questions, answers, comments, like
+from .models import questions, answers, comments, like,favourite
 import datetime
 from django.http import HttpResponse
 from .forms import answers_form
@@ -215,3 +215,10 @@ def my_answers_view(request):
             'list' : lst
           }
         return render(request,'public_forum/my_answers.html',context)
+
+def fav_view(request):
+    question_id = request.GET.get('question_id',0)
+    user = request.session.get('username','null')
+    fav = favourite(user=user,question_id=question_id)
+    fav.save()
+    return HttpResponse('success')

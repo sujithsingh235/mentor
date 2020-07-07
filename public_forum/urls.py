@@ -11,5 +11,6 @@ urlpatterns = [
     path('delete_answer',delete_answer_view),
     path('like',like_view),
     path('my_questions',my_questions_view),
-    path('my_answers',my_answers_view)
+    path('my_answers',my_answers_view),
+    path('fav',fav_view)
 ]
