@@ -2,11 +2,8 @@
 
 {% block content %}
 
-<center><h2> Public forum</h2></center>
+<center><h2> My questions</h2></center>
 <ul>
-	<li><a href="./create_new_question">
-		new question  <!-- when the user wants to ask a question, he will click this one-->
-	</a></li>
 	{% if exist %}
 		{% for question in questions %}  <!--already asked questions sorted descending by posted time-->
 			<li><a href=./{{question.id}}>
@@ -19,8 +16,5 @@
 		<h2>No questions</h2>
 	{% endif %}
 </ul>
-<a class="btn btn-primary" href="./my_questions">My questions</a>
-<a class="btn btn-primary" href="./my_answers">My answers</a>
-<a class="btn btn-primary" href="#">Favourite</a>
 
 {% endblock %}

@@ -46,12 +46,14 @@ def question_brief_view(request, id):
         exist = True
         for ans in answer:		# This will count the number of comments and likes
             comments_count = comments.objects.filter(answer_id=ans.id).count()
-            dict_liked_users = list(like.objects.filter(answer_id = ans.id).values('user')) # This will return a list of dictionaries. So we have to convert it as a list of likes_users.
+            # This will return a list of dictionaries. So we have to convert it as a list of likes_users.
+            dict_liked_users = list(like.objects.filter(
+                answer_id=ans.id).values('user'))
             liked_users = []
             for user in dict_liked_users:
                 liked_users.append(user['user'])
             likes_count = like.objects.filter(answer_id=ans.id).count()
-            new_tuple = (ans, comments_count, likes_count,liked_users)
+            new_tuple = (ans, comments_count, likes_count, liked_users)
             list_of_answers.append(new_tuple)
     else:
         exist = False
@@ -80,7 +82,7 @@ def write_answer_view(request, id):
         posted_time = datetime.datetime.now()
         ans = request.POST.get('ans')
         answer = answers(question_id=id, answer=ans,
-                         user=user, posted_time=posted_time,like=0)
+                         user=user, posted_time=posted_time, like=0)
         answer.save()
         return redirect("/public/forum/" + str(id))
 
@@ -147,7 +149,7 @@ def delete_answer_view(request):
 
 
 def like_view(request):
-    current_user = request.session.get('username','null')
+    current_user = request.session.get('username', 'null')
     if current_user == 'null':
         return redirect('user_login')
     user = request.POST.get('user')
@@ -163,7 +165,7 @@ def like_view(request):
         ans_obj.like = like_count
         ans_obj.save()
     elif status == "rlike":   # rlike means removing the like
-        l = like.objects.get(user=user,answer_id=answer_id)
+        l = like.objects.get(user=user, answer_id=answer_id)
         l.delete()
         ans_obj = answers.objects.get(id=answer_id)
         like_count = ans_obj.like - 1
@@ -171,3 +173,45 @@ def like_view(request):
         ans_obj.like = like_count
         ans_obj.save()
     return redirect('/public/forum/'+str(question_id))
+
+
+def my_questions_view(request):
+    user = request.session.get('username', 'null')
+    if user == 'null':
+        return redirect('user_login')
+    else:
+        ques = questions.objects.filter(user=user)
+        if len(ques) != 0:
+            exist = True
+        else:
+            exist = False  # No questions to be displayed
+        context = {
+            'questions': ques,
+            'exist': exist
+        }
+        return render(request, 'public_forum/my_questions.html', context)
+
+
+def my_answers_view(request):
+    user = request.session.get('username', 'null')
+    if user == 'null':
+        return redirect('user_login')
+    else:
+        ans = answers.objects.filter(user=user)
+        lst = []
+        for i in ans:
+            lst.append(i.question_id)
+        ques = questions.objects.filter(id__in=lst)
+        lst.clear()
+        print(ans)
+        print(ques)
+        for an in ans:  # This for loop will group the question with answer.
+           for que in ques:
+               if an.question_id == que.id:
+                   new_tup = (que.id,que.question,an.answer)
+                   lst.append(new_tup)
+        print(lst)
+        context = {
+            'list' : lst
+          }
+        return render(request,'public_forum/my_answers.html',context)
