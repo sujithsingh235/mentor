@@ -1,8 +1,10 @@
 from django.shortcuts import render, redirect
-from .models import questions, answers, comments, like,favourite
+from .models import questions, answers, comments, like, favourite
 import datetime
 from django.http import HttpResponse
 from .forms import answers_form
+
+from user_signup.decorators import *
 
 # from .forms import new_question_form
 
@@ -206,19 +208,23 @@ def my_answers_view(request):
         print(ans)
         print(ques)
         for an in ans:  # This for loop will group the question with answer.
-           for que in ques:
-               if an.question_id == que.id:
-                   new_tup = (que.id,que.question,an.answer)
-                   lst.append(new_tup)
+            for que in ques:
+                if an.question_id == que.id:
+                    new_tup = (que.id, que.question, an.answer)
+                    lst.append(new_tup)
         print(lst)
         context = {
-            'list' : lst
-          }
-        return render(request,'public_forum/my_answers.html',context)
+            'list': lst
+        }
+        return render(request, 'public_forum/my_answers.html', context)
+
 
 def fav_view(request):
-    question_id = request.GET.get('question_id',0)
-    user = request.session.get('username','null')
-    fav = favourite(user=user,question_id=question_id)
-    fav.save()
-    return HttpResponse('success')
+    user = request.session.get('username', 'null')
+    if user == 'null':
+        return redirect('user_login')
+    else:
+        question_id = request.POST.get('question_id')
+        fav = favourite(user=user, question_id=question_id)
+        fav.save()
+        return HttpResponse('success')

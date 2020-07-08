@@ -5,56 +5,72 @@
 <h2>Question</h2>
 
 
-    <script type="text/javascript">
-        function hello()
-        {
-            var x = new XMLHttpRequest();
-            x.open('GET','/public/forum/fav?question_id={{question.id}}',true);
-            x.send();
-        }
-    </script>
-    <h6>{{question.question}}</h6>
-    <p>{{question.description}}</p>
-    <button type="button" onclick="hello()">favourite</button>
+<script type="text/javascript">
+    function add_to_fav(id)      // This code is for fav
+    {
+        var x = new XMLHttpRequest();
+        x.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                if (this.responseText != 'success') {       //if the user didnt login, the response text will not be success . Then we will redirect to login page.
+                    window.location = this.responseURL;
+                }
+            }
+        };
+        const csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        x.open('POST', '/public/forum/fav', true);
+        x.setRequestHeader('X-CSRFToken', csrftoken);
+        x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        x.send("question_id=" + id);
+    }
+</script>
+<h6>{{question.question}}</h6>
+<p>{{question.description}}</p>
+<button type="button" onclick='add_to_fav("{{question.id}}")'>favourite</button> <!--Favourite button-->
 
 
 
-    <a href="./write_answer/{{question.id}}" class="btn btn-success">Add an answer</a>
+<a href="./write_answer/{{question.id}}" class="btn btn-success">Add an answer</a>
 <h2>Answers</h2>
-    {% if exist %}
-        {% for answer,no_of_comments,no_of_likes,liked_users in answers %}
-            <h6>{{answer.answer}}</h6>
-            <p>Posted by: {{answer.user}}</p>
-            <p>Posted time: {{answer.posted_time}}</p>
-            <a href="./comments/{{answer.id}}" class="btn btn-success">comments
-                <span class="badge badge-light">{{no_of_comments}}</span>     <!--number of comments-->
-            </a>
-            {% if answer.user == current_user %}
-                <a href="/public/forum/edit_answer/{{answer.id}}/{{question.id}}">edit</a>  <!--The user can edit his answers-->
-                <a href="/public/forum/delete_answer?answer_id={{answer.id}}&question_id={{question.id}}">delete</a></br><!--The user can delete his answer-->
-            {% endif %}
-            <form method="POST" action="./like">
-                {% csrf_token %}
-                <input type="hidden" name="user" value="{{current_user}}">
-                <input type="hidden" name="answer_id" value="{{answer.id}}">
-                <input type="hidden" name="question_id" value="{{question.id}}">
-                {% if current_user != answer.user %}<!--The like option should not be available for the creator of that answer-->
-                    {% if current_user not in liked_users %}
-                        <input type="hidden" name="status" value="like"> <!--This denotes that the user likes the question-->
-                        <input type="submit" value="Like"><!--like button. The user didnt like this answer yet.-->
-                    {% else %}    
-                        <input type="hidden" name="status" value="rlike"><!--rlike means removing the like-->
-                        <input type="submit" value="Liked"><!--active like button.Because The user already liked this answer.-->
-                    {% endif %}
-                {% endif%}
-                <span class="badge">{{no_of_likes}}</span>
-            </form>
-        {% endfor %}    
+{% if exist %}
+{% for answer,no_of_comments,no_of_likes,liked_users in answers %}
+<h6>{{answer.answer}}</h6>
+<p>Posted by: {{answer.user}}</p>
+<p>Posted time: {{answer.posted_time}}</p>
+<a href="./comments/{{answer.id}}" class="btn btn-success">comments
+    <span class="badge badge-light">{{no_of_comments}}</span>
+    <!--number of comments-->
+</a>
+{% if answer.user == current_user %}
+<a href="/public/forum/edit_answer/{{answer.id}}/{{question.id}}">edit</a>
+<!--The user can edit his answers-->
+<a href="/public/forum/delete_answer?answer_id={{answer.id}}&question_id={{question.id}}">delete</a></br>
+<!--The user can delete his answer-->
+{% endif %}
+<form method="POST" action="./like">
+    {% csrf_token %}
+    <input type="hidden" name="user" value="{{current_user}}">
+    <input type="hidden" name="answer_id" value="{{answer.id}}">
+    <input type="hidden" name="question_id" value="{{question.id}}">
+    {% if current_user != answer.user %}
+    <!--The like option should not be available for the creator of that answer-->
+    {% if current_user not in liked_users %}
+    <input type="hidden" name="status" value="like">
+    <!--This denotes that the user likes the question-->
+    <input type="submit" value="Like">
+    <!--like button. The user didnt like this answer yet.-->
     {% else %}
-        <h4>No answers</h4>
+    <input type="hidden" name="status" value="rlike">
+    <!--rlike means removing the like-->
+    <input type="submit" value="Liked">
+    <!--active like button.Because The user already liked this answer.-->
     {% endif %}
-   
+    {% endif%}
+    <span class="badge">{{no_of_likes}}</span>
+</form>
+{% endfor %}
+{% else %}
+<h4>No answers</h4>
+{% endif %}
+
 
 {% endblock %}
-
-
