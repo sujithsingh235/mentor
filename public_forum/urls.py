@@ -12,5 +12,7 @@ urlpatterns = [
     path('like',like_view),
     path('my_questions',my_questions_view),
     path('my_answers',my_answers_view),
-    path('fav',fav_view)
+    path('fav_add',fav_view),
+    path('fav_remove',fav_remove_view),
+    path('my_favourite',my_favourite_view)
 ]

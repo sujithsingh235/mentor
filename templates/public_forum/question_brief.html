@@ -4,7 +4,7 @@
 <!-- This page will show a detailed view of a question and its answers-->
 <h2>Question</h2>
 
-
+{% csrf_token %}
 <script type="text/javascript">
     function add_to_fav(id)      // This code is for fav
     {
@@ -14,10 +14,36 @@
                 if (this.responseText != 'success') {       //if the user didnt login, the response text will not be success . Then we will redirect to login page.
                     window.location = this.responseURL;
                 }
+                else if(this.responseText == 'success'){
+                    document.getElementById('fav_id').innerHTML = "added to fav";
+                    document.getElementById('fav_id').setAttribute('onclick','remove_fav("{{question.id}}")')
+                }
             }
         };
-        const csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
-        x.open('POST', '/public/forum/fav', true);
+        csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        x.open('POST', '/public/forum/fav_add', true);
+        x.setRequestHeader('X-CSRFToken', csrftoken);
+        x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        x.send("question_id=" + id);
+    }
+    function remove_fav(id)      // This code is for removing fav
+    {
+        var x = new XMLHttpRequest();
+        x.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                //if the user didnt login, the response text will not be success . Then we will redirect to login page.
+                if (this.responseText != 'success') {       
+                    window.location = this.responseURL;
+                }
+                else 
+                if(this.responseText == 'success'){
+                    document.getElementById('fav_id').innerHTML = "add to fav";
+                    document.getElementById('fav_id').setAttribute('onclick','add_to_fav("{{question.id}}")')
+                }
+            }
+        };
+        csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        x.open('POST', '/public/forum/fav_remove', true);
         x.setRequestHeader('X-CSRFToken', csrftoken);
         x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
         x.send("question_id=" + id);
@@ -25,8 +51,17 @@
 </script>
 <h6>{{question.question}}</h6>
 <p>{{question.description}}</p>
-<button type="button" onclick='add_to_fav("{{question.id}}")'>favourite</button> <!--Favourite button-->
-
+<!--Favourite button-->
+    <button id="fav_id" type="button" 
+    {% if fav %}  
+        onclick='remove_fav("{{question.id}}")'>
+        added to fav
+    {% else %}
+        onclick='add_to_fav("{{question.id}}")'>
+        add to fav
+    {% endif %}
+    </button>
+<!---->
 
 
 <a href="./write_answer/{{question.id}}" class="btn btn-success">Add an answer</a>
@@ -47,7 +82,6 @@
 <!--The user can delete his answer-->
 {% endif %}
 <form method="POST" action="./like">
-    {% csrf_token %}
     <input type="hidden" name="user" value="{{current_user}}">
     <input type="hidden" name="answer_id" value="{{answer.id}}">
     <input type="hidden" name="question_id" value="{{question.id}}">

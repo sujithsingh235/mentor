@@ -44,6 +44,7 @@ def question_brief_view(request, id):
     answer = answers.objects.filter(question_id=id).order_by('-like')
     list_of_answers = []
     current_user = request.session.get('username', 'null')
+    added_to_fav = favourite.objects.filter(user=current_user,question_id=id).exists() # checks whether the user already added this question to fav or not
     if len(answer) != 0:
         exist = True
         for ans in answer:		# This will count the number of comments and likes
@@ -64,6 +65,7 @@ def question_brief_view(request, id):
         'answers': list_of_answers,
         'exist': exist,
         'current_user': current_user,
+        'fav' : added_to_fav
     }
     return render(request, 'public_forum/question_brief.html', context)
 
@@ -228,3 +230,31 @@ def fav_view(request):
         fav = favourite(user=user, question_id=question_id)
         fav.save()
         return HttpResponse('success')
+
+
+def fav_remove_view(request):
+    user = request.session.get('username','null')
+    if user == 'null':
+        return redirect('user_login')
+    else:
+        question_id = request.POST.get('question_id')
+        fav = favourite.objects.get(user=user, question_id=question_id)
+        fav.delete()
+        return HttpResponse('success')
+
+@login_required
+def my_favourite_view(request):
+    user = request.session.get('username','null')
+    question_ids = favourite.objects.filter(user=user).values('question_id')
+    print(question_ids)
+    ques = questions.objects.filter(id__in = question_ids).order_by('-id')
+    if len(question_ids)<=0:
+        exist = False
+    else:
+        exist = True
+    context = {
+        "questions" : ques,
+        "exist" : exist
+    }
+    return render(request,"public_forum/my_fav.html",context)
+
