@@ -9,10 +9,12 @@ urlpatterns = [
     path('comments/<int:id>',comments_view),
     path('edit_answer/<int:id>/<int:question_id>',edit_answer_view),
     path('delete_answer',delete_answer_view),
-    path('like',like_view),
+    path('add_like',add_like_view),
+    path('remove_like',remove_like_view),
     path('my_questions',my_questions_view),
     path('my_answers',my_answers_view),
     path('fav_add',fav_view),
     path('fav_remove',fav_remove_view),
-    path('my_favourite',my_favourite_view)
+    path('my_favourite',my_favourite_view),
+    path('report',report_view)
 ]

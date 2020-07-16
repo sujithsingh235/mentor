@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import questions, answers, comments, like, favourite
+from .models import questions, answers, comments, like, favourite, report
 import datetime
 from django.http import HttpResponse
 from .forms import answers_form
@@ -45,6 +45,9 @@ def question_brief_view(request, id):
     list_of_answers = []
     current_user = request.session.get('username', 'null')
     added_to_fav = favourite.objects.filter(user=current_user,question_id=id).exists() # checks whether the user already added this question to fav or not
+    reported_questions = report.objects.filter(user=current_user,QorA="question").values_list("QorA_id",flat=True)
+    reported_answers = report.objects.filter(user=current_user,QorA="answer").values_list("QorA_id",flat=True)
+    print(reported_questions)
     if len(answer) != 0:
         exist = True
         for ans in answer:		# This will count the number of comments and likes
@@ -65,7 +68,9 @@ def question_brief_view(request, id):
         'answers': list_of_answers,
         'exist': exist,
         'current_user': current_user,
-        'fav' : added_to_fav
+        'fav' : added_to_fav,
+        'reported_questions' : reported_questions,
+        'reported_answers' : reported_answers
     }
     return render(request, 'public_forum/question_brief.html', context)
 
@@ -94,24 +99,24 @@ def write_answer_view(request, id):
 def comments_view(request, id):
     if request.method == 'POST':
         user = request.session.get('username', 'null')
+        if user == 'null':
+            return redirect('user_login')
         posted_time = datetime.datetime.now()
         comment = request.POST.get('comment')
         answer_id = id
-        new_comment = comments(
-            user=user, posted_time=posted_time, comment=comment, answer_id=id)
+        new_comment = comments(user=user, posted_time=posted_time, comment=comment, answer_id=id)
         new_comment.save()
-    elif request.method == 'POST':
-        comment = comments.objects.filter(
-            answer_id=id).order_by('-posted_time')
-        if len(comment) != 0:
-            exist = True
-        else:
-            exist = False
-        context = {
-            'comments': comment,
-            'exist': exist
-        }
-        return render(request, "public_forum/comments.html", context)
+    
+    comment = comments.objects.filter(answer_id=id).order_by('-posted_time')
+    if len(comment) != 0:
+        exist = True
+    else:
+        exist = False
+    context = {
+        'comments': comment,
+        'exist': exist
+    }
+    return render(request, "public_forum/comments.html", context)
 
 
 def edit_answer_view(request, id, question_id):
@@ -152,31 +157,36 @@ def delete_answer_view(request):
         return redirect('/public/forum/'+str(question_id))
 
 
-def like_view(request):
-    current_user = request.session.get('username', 'null')
-    if current_user == 'null':
+def add_like_view(request):
+    user = request.session.get('username','null')
+    if user == 'null':
         return redirect('user_login')
-    user = request.POST.get('user')
     answer_id = request.POST.get('answer_id')
-    question_id = request.POST.get('question_id')
-    status = request.POST.get('status')
-    if status == 'like':
-        new_like = like(user=user, answer_id=answer_id)
-        new_like.save()
-        ans_obj = answers.objects.get(id=answer_id)
-        like_count = ans_obj.like + 1
-        print(like_count)
-        ans_obj.like = like_count
-        ans_obj.save()
-    elif status == "rlike":   # rlike means removing the like
-        l = like.objects.get(user=user, answer_id=answer_id)
-        l.delete()
-        ans_obj = answers.objects.get(id=answer_id)
-        like_count = ans_obj.like - 1
-        print(like_count)
-        ans_obj.like = like_count
-        ans_obj.save()
-    return redirect('/public/forum/'+str(question_id))
+    new_like = like(user=user, answer_id=answer_id)
+    new_like.save()
+    ans_obj = answers.objects.get(id=answer_id)
+    like_count = ans_obj.like + 1
+    print(like_count)
+    ans_obj.like = like_count
+    ans_obj.save()
+    return HttpResponse('success')
+
+
+def remove_like_view(request):
+    user = request.session.get('username','null')
+    if user == 'null':
+        return redirect('user_login')
+    answer_id = request.POST.get('answer_id')
+    l = like.objects.get(user=user,answer_id=answer_id)
+    l.delete()
+    ans_obj = answers.objects.get(id=answer_id)
+    like_count = ans_obj.like - 1
+    print(like_count)
+    ans_obj.like = like_count
+    ans_obj.save()
+    return HttpResponse('success')
+
+    
 
 
 def my_questions_view(request):
@@ -258,3 +268,22 @@ def my_favourite_view(request):
     }
     return render(request,"public_forum/my_fav.html",context)
 
+
+def report_view(request):
+    user = request.session.get('username','null')
+    if user == 'null':
+        return redirect('user_login')
+    id = request.POST.get('id')
+    operation = request.POST.get('operation')
+    QorA = request.POST.get('QorA')
+    if operation == 'add_report':
+        new_report = report(user=user,QorA=QorA,QorA_id=id)
+        new_report.save()
+        print(new_report.QorA)
+        print('report added')
+        return HttpResponse('success')
+    elif operation == 'remove_report':
+        del_report = report.objects.get(user=user,QorA=QorA,QorA_id=id)
+        del_report.delete()
+        print('report deleted')
+        return HttpResponse('success')

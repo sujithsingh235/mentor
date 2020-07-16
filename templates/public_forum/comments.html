@@ -13,11 +13,9 @@
     {% else %}
         <h4>No comments</h4>
     {% endif %}
-    {% is user.is_authenticated %}
         <form method="POST">
             {% csrf_token %}
             <textarea required="required" name="comment" rows=10 cols=40 placeholder="Enter your comments here....."></textarea></br>
             <input type="submit">
         </form>
-    {% endif %}
 {% endblock %}

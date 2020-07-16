@@ -28,3 +28,8 @@ class favourite(models.Model):
     user = models.CharField(max_length=25)
     question_id = models.IntegerField()
 
+class report(models.Model):
+    user = models.CharField(max_length=25)
+    QorA = models.CharField(max_length=10)
+    QorA_id = models.IntegerField()
+
