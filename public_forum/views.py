@@ -1,7 +1,7 @@
 from django.shortcuts import render, redirect
 from .models import questions, answers, comments, like, favourite, report
 import datetime
-from django.http import HttpResponse
+from django.http import HttpResponse,Http404
 from .forms import answers_form
 
 from user_signup.decorators import *
@@ -35,26 +35,28 @@ def new_question_view(request):
     question.description = request.POST.get('desc')
     question.user = request.session.get('username', 'null')
     question.posted_time = datetime.datetime.now()
+    question.report = 0
     question.save()
     return redirect('/public/forum/')
 
 
 def question_brief_view(request, id):
-    question = questions.objects.get(id=id)
+    try:
+        question = questions.objects.get(id=id)
+    except:
+        raise Http404("This question is not found in the database")
     answer = answers.objects.filter(question_id=id).order_by('-like')
     list_of_answers = []
     current_user = request.session.get('username', 'null')
     added_to_fav = favourite.objects.filter(user=current_user,question_id=id).exists() # checks whether the user already added this question to fav or not
     reported_questions = report.objects.filter(user=current_user,QorA="question").values_list("QorA_id",flat=True)
     reported_answers = report.objects.filter(user=current_user,QorA="answer").values_list("QorA_id",flat=True)
-    print(reported_questions)
     if len(answer) != 0:
         exist = True
         for ans in answer:		# This will count the number of comments and likes
             comments_count = comments.objects.filter(answer_id=ans.id).count()
             # This will return a list of dictionaries. So we have to convert it as a list of likes_users.
-            dict_liked_users = list(like.objects.filter(
-                answer_id=ans.id).values('user'))
+            dict_liked_users = list(like.objects.filter(answer_id=ans.id).values('user'))
             liked_users = []
             for user in dict_liked_users:
                 liked_users.append(user['user'])
@@ -75,11 +77,13 @@ def question_brief_view(request, id):
     return render(request, 'public_forum/question_brief.html', context)
 
 
+@login_required
 def write_answer_view(request, id):
     if request.method == 'GET':
-        if request.session.get('username', 'null') == 'null':
-            return redirect('user_login')
-        question = questions.objects.get(id=id)
+        try:
+            question = questions.objects.get(id=id)
+        except:
+            raise Http404("The question is not found in the database")
         context = {
             'question': question,
             'placeholder': "Enter your answer..."
@@ -90,12 +94,12 @@ def write_answer_view(request, id):
         user = request.session.get('username', 'null')
         posted_time = datetime.datetime.now()
         ans = request.POST.get('ans')
-        answer = answers(question_id=id, answer=ans,
-                         user=user, posted_time=posted_time, like=0)
+        answer = answers(question_id=id, answer=ans,user=user, posted_time=posted_time, like=0,report=0)
         answer.save()
         return redirect("/public/forum/" + str(id))
 
 
+@login_required
 def comments_view(request, id):
     if request.method == 'POST':
         user = request.session.get('username', 'null')
@@ -119,10 +123,14 @@ def comments_view(request, id):
     return render(request, "public_forum/comments.html", context)
 
 
+@login_required
 def edit_answer_view(request, id, question_id):
     if request.method == "GET":
         current_user = request.session.get('username', 'null')
-        ans = answers.objects.get(id=id)
+        try:
+            ans = answers.objects.get(id=id)
+        except:
+            raise Http404("The answer is not found in the database")
         if current_user == 'null':
             return redirect('user_login')
         elif current_user != ans.user:
@@ -133,7 +141,10 @@ def edit_answer_view(request, id, question_id):
         }
         return render(request, "public_forum/write_answer.html", context)
     elif request.method == 'POST':
-        ans = answers.objects.get(id=id)
+        try:
+            ans = answers.objects.get(id=id)
+        except:
+            raise Http404("The answer is not found in the database")
         ans.answer = request.POST.get('ans')
         ans.posted_time = datetime.datetime.now()
         ans.save()
@@ -143,7 +154,10 @@ def edit_answer_view(request, id, question_id):
 def delete_answer_view(request):
     answer_id = request.GET.get('answer_id')
     question_id = request.GET.get('question_id')
-    answer = answers.objects.get(id=answer_id)
+    try:
+        answer = answers.objects.get(id=answer_id)
+    except:
+        raise Http404("The answer is not found in the database")
     comment = comments.objects.filter(answer_id=answer_id)
     user = answer.user
     current_user = request.session.get('username', 'null')
@@ -164,7 +178,10 @@ def add_like_view(request):
     answer_id = request.POST.get('answer_id')
     new_like = like(user=user, answer_id=answer_id)
     new_like.save()
-    ans_obj = answers.objects.get(id=answer_id)
+    try:
+        ans_obj = answers.objects.get(id=answer_id)
+    except:
+        raise Http404("The answer is not found in the database")
     like_count = ans_obj.like + 1
     print(like_count)
     ans_obj.like = like_count
@@ -177,9 +194,15 @@ def remove_like_view(request):
     if user == 'null':
         return redirect('user_login')
     answer_id = request.POST.get('answer_id')
-    l = like.objects.get(user=user,answer_id=answer_id)
+    try:
+        l = like.objects.get(user=user,answer_id=answer_id)
+    except:
+        raise Http404("The like object is not found in the database")
     l.delete()
-    ans_obj = answers.objects.get(id=answer_id)
+    try:
+        ans_obj = answers.objects.get(id=answer_id)
+    except:
+        raise Http404("The answer object is not found in the database")
     like_count = ans_obj.like - 1
     print(like_count)
     ans_obj.like = like_count
@@ -248,7 +271,10 @@ def fav_remove_view(request):
         return redirect('user_login')
     else:
         question_id = request.POST.get('question_id')
-        fav = favourite.objects.get(user=user, question_id=question_id)
+        try:
+            fav = favourite.objects.get(user=user, question_id=question_id)
+        except:
+            raise Http404("The favourite object is not found in the database")
         fav.delete()
         return HttpResponse('success')
 
@@ -276,14 +302,33 @@ def report_view(request):
     id = request.POST.get('id')
     operation = request.POST.get('operation')
     QorA = request.POST.get('QorA')
+    if QorA == 'question':
+        try:
+            obj = questions.objects.get(id=id)
+        except:
+            raise Http404("The question object is not found in the database")
+    else:
+        try:
+            obj = answers.objects.get(id=id)
+        except:
+            raise Http404("The answer object is not found in the database")
     if operation == 'add_report':
         new_report = report(user=user,QorA=QorA,QorA_id=id)
         new_report.save()
-        print(new_report.QorA)
-        print('report added')
+        count = obj.report + 1
+        if count>=50:
+            obj.delete()
+            return redirect('/public/forum/')
+        obj.report = count
+        obj.save()
         return HttpResponse('success')
     elif operation == 'remove_report':
-        del_report = report.objects.get(user=user,QorA=QorA,QorA_id=id)
+        try:
+            del_report = report.objects.get(user=user,QorA=QorA,QorA_id=id)
+        except:
+            raise Http404("The report object is not found in the database")
         del_report.delete()
-        print('report deleted')
+        count = obj.report
+        obj.report = count - 1
+        obj.save()
         return HttpResponse('success')
