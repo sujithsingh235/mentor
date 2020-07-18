@@ -313,6 +313,8 @@ def report_view(request):
         except:
             raise Http404("The answer object is not found in the database")
     if operation == 'add_report':
+        if report.objects.filter(user=user,QorA=QorA,QorA_id=id).exists():
+            return HttpResponse("report already exist")
         new_report = report(user=user,QorA=QorA,QorA_id=id)
         new_report.save()
         count = obj.report + 1
@@ -323,6 +325,8 @@ def report_view(request):
         obj.save()
         return HttpResponse('success')
     elif operation == 'remove_report':
+        if not report.objects.filter(user=user,QorA=QorA,QorA_id=id).exists():
+            return HttpResponse("report not found")
         try:
             del_report = report.objects.get(user=user,QorA=QorA,QorA_id=id)
         except:
