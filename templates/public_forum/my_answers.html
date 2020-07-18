@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<center><h2> My answers</h2></center>
+{% for question_id,question,answer in list %}
+    <a href="/public/forum/{{question_id}}">{{question}}</a>
+    <p>{{answer}}</p>
+{% endfor %}
+{% endblock %}

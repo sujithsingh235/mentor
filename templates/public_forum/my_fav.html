@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <center><h2>My favourite page</h2></center>
+    {% if exist %}
+        {% for question in questions %}
+            <ul>
+                <li><a href="/public/forum/{{question.id}}">{{question.question}}</a></li>
+            </ul>
+        {% endfor %}
+    {% else %}
+        <h2>No favourite questions</h2>
+    {% endif %}
+{% endblock %}
