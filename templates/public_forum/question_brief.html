@@ -135,6 +135,11 @@
 {% for tag in tags %}
     <p>{{tag}}</p>
 {% endfor %}
+    <!--question delete option-->
+        {% if question.user == current_user %}
+            <a href="./delete_question/{{question.id}}" class="btn btn-primary">delete</a>
+        {% endif %}
+    <!--/question delete option-->
 <!--Favourite button-->
     <button id="fav_id" type="button" 
     {% if fav %}  

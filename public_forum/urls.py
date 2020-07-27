@@ -17,5 +17,6 @@ urlpatterns = [
     path('fav_remove',fav_remove_view),
     path('my_favourite',my_favourite_view),
     path('report',report_view),
-    path('get_tags',get_tags_view)
+    path('get_tags',get_tags_view),
+    path('delete_question/<int:id>',delete_question_view)
 ]

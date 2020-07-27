@@ -212,6 +212,8 @@ def delete_answer_view(request):
     elif current_user != user:
         return redirect('/')
     else:
+        l = like.objects.filter(answer_id=answer_id)
+        l.delete()
         answer.delete()
         comment.delete()
         return redirect('/public/forum/'+str(question_id))
@@ -403,4 +405,31 @@ def get_tags_view(request):
     }
     return JsonResponse(data)
 
+
+@login_required
+def delete_question_view(request,id):
+    try:
+        question = questions.objects.get(id=id)
+    except:
+        return Http404("The question is not found in the database")
+    user = request.session.get('username','null')
+    if user == 'null':
+        return redirect('user_login')
+    if user != question.user:
+        return redirect('/public/forum/page-1')
+    answer = answers.objects.filter(question_id=id)
+    for ans in answer:
+        comment = comments.objects.filter(answer_id=ans.id)
+        comment.delete()
+        l = like.objects.filter(answer_id=ans.id)
+        l.delete()
+    fav = favourite.objects.filter(question_id=id)
+    t = tag_with_question_id.objects.filter(question_id=id)
+    fav.delete()
+    t.delete()
+    answer.delete()
+    question.delete()
+    return redirect('/public/forum/page-1',permanent=True)
+    
+    
 
