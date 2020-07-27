@@ -131,7 +131,10 @@
     }
 </script>
 <h6>{{question.question}}</h6>
-<p>{{question.description}}</p>
+<p>{{question.description}}</p><br>
+{% for tag in tags %}
+    <p>{{tag}}</p>
+{% endfor %}
 <!--Favourite button-->
     <button id="fav_id" type="button" 
     {% if fav %}  
@@ -154,22 +157,22 @@
 <!--/Report-->
 
 <a href="./write_answer/{{question.id}}" class="btn btn-success">Add an answer</a>
-<h2>Answers</h2>
-{% if exist %}
+<h2>Answers({{no_of_answers}})</h2>
+{% if no_of_answers != 0 %}
 {% for answer,no_of_comments,no_of_likes,liked_users in answers %}
-<h6>{{answer.answer}}</h6>
-<p>Posted by: {{answer.user}}</p>
-<p>Posted time: {{answer.posted_time}}</p>
-<a href="./comments/{{answer.id}}" class="btn btn-success">comments
+    <h6>{{answer.answer}}</h6>
+    <p>Posted by: {{answer.user}}</p>
+    <p>Posted time: {{answer.posted_time}}</p>
+    <a href="./comments/{{answer.id}}" class="btn btn-success">comments
     <span class="badge badge-light">{{no_of_comments}}</span>
     <!--number of comments-->
-</a>
-{% if answer.user == current_user %}
-<a href="/public/forum/edit_answer/{{answer.id}}/{{question.id}}">edit</a>
-<!--The user can edit his answers-->
-<a href="/public/forum/delete_answer?answer_id={{answer.id}}&question_id={{question.id}}">delete</a></br>
-<!--The user can delete his answer-->
-{% endif %}
+    </a>
+    {% if answer.user == current_user %}
+        <a href="/public/forum/edit_answer/{{answer.id}}/{{question.id}}">edit</a>
+        <!--The user can edit his answers-->
+        <a href="/public/forum/delete_answer?answer_id={{answer.id}}&question_id={{question.id}}">delete</a></br>
+        <!--The user can delete his answer-->
+    {% endif %}
 <form method="POST" action="./like">
     {% if current_user != answer.user %}
         <!--The like option should not be available for the creator of that answer-->

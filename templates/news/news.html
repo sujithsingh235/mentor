@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+
+{% load crispy_forms_tags %}
+
+{% block content %}
+<h2><center>News page</center></h2>
+
+<h3>{{title}}</h3>
+<p>{{desc}}</p>
+<p>To read more,<a href='{{link}}' target="_blank"'>click here</a></p>
+{% endblock %}

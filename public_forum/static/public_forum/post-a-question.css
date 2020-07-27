@@ -1,0 +1,51 @@
+#form{
+	 background: rgb(53, 91, 192);
+      background: linear-gradient(7deg, rgba(53, 91, 192, 1) 0%, rgba(44, 130, 186, 1) 33%, rgba(44, 130, 186, 1) 67%, rgba(53, 91, 192, 1) 100%);
+}
+
+label{
+	font-weight:700;
+	
+}
+
+
+button {
+	transition: transform 80ms ease-in;
+}
+
+button:active {
+	transform: scale(0.95);
+}
+
+button:focus{
+	outline: none !important;
+}
+
+
+@media only screen and (min-width:576px) and (max-width:991px){
+	.modal-md{
+		max-width:90%;
+	}
+}
+
+@media only screen and (max-width:575px){
+	.modal-sm{
+		max-width:95%;
+		max-height:95%;
+	}
+}
+
+.tag-layout span{
+  font-size:12px;
+}
+
+#tag-list .tag-btn{
+	 font-size:12px;
+     margin:4px;
+} 
+
+
+
+
+
+

@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'public_forum',
     'chat',
     'homepage',
+    'schemes'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

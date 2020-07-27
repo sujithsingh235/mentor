@@ -42,6 +42,11 @@ urlpatterns = [
     path('temp_view2/',temp_view2,name='temp_view2'),
 # Public Forum Views
     path('public/forum/',include('public_forum.urls')),
+# Government schemes
+    path('government-schemes/',include('schemes.urls')),
+
+# News
+    path('news/',include('news.urls')),
 # Admin
     path('admin/', admin.site.urls),
 ]

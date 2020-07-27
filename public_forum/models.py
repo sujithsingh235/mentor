@@ -5,14 +5,14 @@ class questions(models.Model): #questions in the public forum
     user = models.CharField(max_length=25)
     posted_time = models.DateTimeField()
     question = models.CharField(max_length=30)
-    description = models.CharField(max_length=100)
+    description = models.CharField(max_length=100,blank=True)
     report = models.IntegerField()
 
 class answers(models.Model): #Answers for the questions in the public forum
     question_id = models.IntegerField()
     user = models.CharField(max_length=25)
     posted_time = models.DateTimeField()
-    answer = models.CharField(max_length=100)
+    answer = models.TextField()
     like = models.IntegerField()
     report = models.IntegerField()
 
@@ -34,4 +34,10 @@ class report(models.Model):
     user = models.CharField(max_length=25)
     QorA = models.CharField(max_length=10)
     QorA_id = models.IntegerField()
+ 
+class tag(models.Model):
+    tag_name = models.CharField(max_length=20)
 
+class tag_with_question_id(models.Model):
+    question_id = models.IntegerField()
+    tag = models.CharField(max_length=30)

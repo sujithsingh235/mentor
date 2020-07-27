@@ -1,8 +1,9 @@
 from django.shortcuts import render, redirect
-from .models import questions, answers, comments, like, favourite, report
+from .models import *
 import datetime
-from django.http import HttpResponse,Http404
+from django.http import HttpResponse,Http404,JsonResponse
 from .forms import answers_form
+import json
 
 from user_signup.decorators import *
 
@@ -10,16 +11,37 @@ from user_signup.decorators import *
 
 # Create your views here.
 
+tags = []
 
-def public_forum_view(request):
-    ques = questions.objects.all().order_by('-posted_time')
+def public_forum_view(request,page):
+    start = (page-1) * 10
+    stop = (page * 10) - 1
+    no_of_questions = questions.objects.all().count()
+    no_of_pages = int(no_of_questions/11) + 1
+    if page > no_of_pages:
+        raise Http404("This page is not found in the database")
+    try:
+        if no_of_pages == page:
+            ques = questions.objects.all().order_by('-posted_time')[start:]
+        else:
+            ques = questions.objects.all().order_by('-posted_time')[start:stop]
+    except:
+        raise Http404("The page is not found in the database")
+    questions_with_tags = []
     if len(ques) != 0:
         exist = True
+        for que in ques:
+            associated_tags = tag_with_question_id.objects.filter(question_id=que.id).values_list("tag",flat=True)
+            print(que.id,associated_tags)
+            new_tup = (que,associated_tags)
+            questions_with_tags.append(new_tup)
     else:
         exist = False  # No questions to be displayed
     context = {
-        'questions': ques,
-        'exist': exist
+        'questions_with_tags': questions_with_tags,
+        'exist': exist,
+        'no_of_pages' : no_of_pages,
+        'current_page' : page
     }
     return render(request, 'public_forum/public_forum.html', context)
 
@@ -29,15 +51,38 @@ def new_question_view(request):
         user = request.session.get('username', 'null')
         if user == 'null':
             return redirect('user_login')
-        return render(request, 'public_forum/create_new_question.html')
+        global tags 
+        tags = list(tag.objects.all().values_list('tag_name',flat=True))
+        print(tags)     
+        return render(request, 'public_forum/create_new_question.html')     
     question = questions()
-    question.question = request.POST.get('question')
-    question.description = request.POST.get('desc')
-    question.user = request.session.get('username', 'null')
+    data = json.loads(request.body)
+    user = request.session.get('username','null')
+    if user == 'null':
+        res = {
+            "msg" : "login",
+            "url" : "user_login"
+        }
+        return JsonResponse(res)
+    question.user = user
     question.posted_time = datetime.datetime.now()
+    question.question = data.get('title')
+    question.description = data.get('desc')
     question.report = 0
     question.save()
-    return redirect('/public/forum/')
+    added_tags = data.get('tags')
+    for this_tag in added_tags:
+        new_ques_tag = tag_with_question_id(question_id=question.id,tag=this_tag)
+        new_ques_tag.save()
+        if this_tag not in tags:
+            new_tag = tag(tag_name=this_tag)
+            new_tag.save()
+    tags.clear()
+    res = {
+        "msg" : "success",
+        "url" : "/public/forum/page-1"
+    }
+    return JsonResponse(res)
 
 
 def question_brief_view(request, id):
@@ -51,8 +96,10 @@ def question_brief_view(request, id):
     added_to_fav = favourite.objects.filter(user=current_user,question_id=id).exists() # checks whether the user already added this question to fav or not
     reported_questions = report.objects.filter(user=current_user,QorA="question").values_list("QorA_id",flat=True)
     reported_answers = report.objects.filter(user=current_user,QorA="answer").values_list("QorA_id",flat=True)
-    if len(answer) != 0:
-        exist = True
+    associated_tags = tag_with_question_id.objects.filter(question_id=id).values_list("tag",flat=True)
+    print(associated_tags)
+    no_of_answers = len(answer)
+    if no_of_answers != 0:    
         for ans in answer:		# This will count the number of comments and likes
             comments_count = comments.objects.filter(answer_id=ans.id).count()
             # This will return a list of dictionaries. So we have to convert it as a list of likes_users.
@@ -63,12 +110,11 @@ def question_brief_view(request, id):
             likes_count = like.objects.filter(answer_id=ans.id).count()
             new_tuple = (ans, comments_count, likes_count, liked_users)
             list_of_answers.append(new_tuple)
-    else:
-        exist = False
     context = {
         'question': question,
+        'tags' : associated_tags,
         'answers': list_of_answers,
-        'exist': exist,
+        'no_of_answers': no_of_answers,
         'current_user': current_user,
         'fav' : added_to_fav,
         'reported_questions' : reported_questions,
@@ -240,14 +286,11 @@ def my_answers_view(request):
             lst.append(i.question_id)
         ques = questions.objects.filter(id__in=lst)
         lst.clear()
-        print(ans)
-        print(ques)
         for an in ans:  # This for loop will group the question with answer.
             for que in ques:
                 if an.question_id == que.id:
                     new_tup = (que.id, que.question, an.answer)
                     lst.append(new_tup)
-        print(lst)
         context = {
             'list': lst
         }
@@ -336,3 +379,28 @@ def report_view(request):
         obj.report = count - 1
         obj.save()
         return HttpResponse('success')
+
+
+
+def get_tags_view(request):
+    value = request.GET.get('value','null')
+    print(value)
+    global tags
+    res = []
+    if value != "":
+        i = 0
+        for tag in tags:
+            if tag.startswith(value):
+                res.append(tag)
+                i += 1
+            if i>5:
+                break
+        res.sort()
+    print(res)
+    data = {
+        "status" : 'ok',
+        "tags" : res
+    }
+    return JsonResponse(data)
+
+
