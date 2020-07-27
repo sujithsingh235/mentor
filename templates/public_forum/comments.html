@@ -7,7 +7,7 @@
     {% if exist %}
         {% for comment in comments %}
             <h6>{{comment.comment}}</h6>
-            <p>Posted by: {{comment.user}}</p>
+            <p>Posted by: {{answer.name}}@{{comment.user}}</p>
             <p>Posted time: {{comment.posted_time}}</p>
         {% endfor %}    
     {% else %}

@@ -3,6 +3,8 @@ from .models import *
 import datetime
 from django.http import HttpResponse,Http404,JsonResponse
 from .forms import answers_form
+from user_signup.models import mentee_model,mentor_model
+from .fun import get_relevant_question
 import json
 
 from user_signup.decorators import *
@@ -32,7 +34,6 @@ def public_forum_view(request,page):
         exist = True
         for que in ques:
             associated_tags = tag_with_question_id.objects.filter(question_id=que.id).values_list("tag",flat=True)
-            print(que.id,associated_tags)
             new_tup = (que,associated_tags)
             questions_with_tags.append(new_tup)
     else:
@@ -69,6 +70,11 @@ def new_question_view(request):
     question.question = data.get('title')
     question.description = data.get('desc')
     question.report = 0
+    name = mentee_model.objects.filter(username=question.user)
+    if len(name) == 0:
+        name = mentor_model.objects.filter(username=question.user)
+    name = name[0]
+    question.name = name.name
     question.save()
     added_tags = data.get('tags')
     for this_tag in added_tags:
@@ -90,6 +96,10 @@ def question_brief_view(request, id):
         question = questions.objects.get(id=id)
     except:
         raise Http404("This question is not found in the database")
+    user = mentee_model.objects.filter(username=question.user)
+    if len(user) == 0:
+        user = mentor_model.objects.filter(username=question.user)
+    user = user[0]
     answer = answers.objects.filter(question_id=id).order_by('-like')
     list_of_answers = []
     current_user = request.session.get('username', 'null')
@@ -110,15 +120,19 @@ def question_brief_view(request, id):
             likes_count = like.objects.filter(answer_id=ans.id).count()
             new_tuple = (ans, comments_count, likes_count, liked_users)
             list_of_answers.append(new_tuple)
+    relevant_question_ids = get_relevant_question(associated_tags,id)
+    print(relevant_question_ids)
+    relevant_questions = questions.objects.filter(id__in=relevant_question_ids)
+    print(relevant_questions)
     context = {
         'question': question,
         'tags' : associated_tags,
         'answers': list_of_answers,
-        'no_of_answers': no_of_answers,
         'current_user': current_user,
         'fav' : added_to_fav,
         'reported_questions' : reported_questions,
-        'reported_answers' : reported_answers
+        'reported_answers' : reported_answers,
+        'relevant_questions' : relevant_questions
     }
     return render(request, 'public_forum/question_brief.html', context)
 
@@ -140,7 +154,11 @@ def write_answer_view(request, id):
         user = request.session.get('username', 'null')
         posted_time = datetime.datetime.now()
         ans = request.POST.get('ans')
-        answer = answers(question_id=id, answer=ans,user=user, posted_time=posted_time, like=0,report=0)
+        name = mentee_model.objects.filter(username=question.user)
+        if len(name) == 0:
+            name = mentor_model.objects.filter(username=question.user)
+        name = name[0]
+        answer = answers(question_id=id, answer=ans,user=user, posted_time=posted_time, like=0,report=0,name=name.name)
         answer.save()
         return redirect("/public/forum/" + str(id))
 
@@ -154,7 +172,11 @@ def comments_view(request, id):
         posted_time = datetime.datetime.now()
         comment = request.POST.get('comment')
         answer_id = id
-        new_comment = comments(user=user, posted_time=posted_time, comment=comment, answer_id=id)
+        name = mentee_model.objects.filter(username=question.user)
+        if len(name) == 0:
+            name = mentor_model.objects.filter(username=question.user)
+        name = name[0]
+        new_comment = comments(user=user, posted_time=posted_time, comment=comment, answer_id=id, name=name.name)
         new_comment.save()
     
     comment = comments.objects.filter(answer_id=id).order_by('-posted_time')
@@ -432,4 +454,6 @@ def delete_question_view(request,id):
     return redirect('/public/forum/page-1',permanent=True)
     
     
+
+
 

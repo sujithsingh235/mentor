@@ -135,6 +135,7 @@
 {% for tag in tags %}
     <p>{{tag}}</p>
 {% endfor %}
+<p>{{question.name}}@{{question.user}}</p>
     <!--question delete option-->
         {% if question.user == current_user %}
             <a href="./delete_question/{{question.id}}" class="btn btn-primary">delete</a>
@@ -162,11 +163,11 @@
 <!--/Report-->
 
 <a href="./write_answer/{{question.id}}" class="btn btn-success">Add an answer</a>
-<h2>Answers({{no_of_answers}})</h2>
-{% if no_of_answers != 0 %}
+<h2>Answers({{answers|length}})</h2>
+{% if answers|length != 0 %}
 {% for answer,no_of_comments,no_of_likes,liked_users in answers %}
     <h6>{{answer.answer}}</h6>
-    <p>Posted by: {{answer.user}}</p>
+    <p>Posted by: {{answer.name}}@{{answer.user}}</p>
     <p>Posted time: {{answer.posted_time}}</p>
     <a href="./comments/{{answer.id}}" class="btn btn-success">comments
     <span class="badge badge-light">{{no_of_comments}}</span>
@@ -209,5 +210,12 @@
 <h4>No answers</h4>
 {% endif %}
 
-
+<h2>relevant questions</h2>
+{% if relevant_questions|length == 0 %}
+    <p>no relevant questions</p>
+{% else %}
+    {% for question in relevant_questions %}
+        <a href="./{{question.id}}">{{question.question}}</a><br>
+    {% endfor %}
+{% endif %}
 {% endblock %}

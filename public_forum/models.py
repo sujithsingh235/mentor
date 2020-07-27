@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 class questions(models.Model): #questions in the public forum
     user = models.CharField(max_length=25)
+    name = models.CharField(max_length=25)
     posted_time = models.DateTimeField()
     question = models.CharField(max_length=30)
     description = models.CharField(max_length=100,blank=True)
@@ -11,6 +12,7 @@ class questions(models.Model): #questions in the public forum
 class answers(models.Model): #Answers for the questions in the public forum
     question_id = models.IntegerField()
     user = models.CharField(max_length=25)
+    name = models.CharField(max_length=25)
     posted_time = models.DateTimeField()
     answer = models.TextField()
     like = models.IntegerField()
@@ -19,6 +21,7 @@ class answers(models.Model): #Answers for the questions in the public forum
 class comments(models.Model):  # Comments for the answers in the public forum
     answer_id = models.IntegerField()
     user = models.CharField(max_length=25)
+    name = models.CharField(max_length=25)
     posted_time = models.DateTimeField()
     comment = models.CharField(max_length=100)
 
