@@ -32,7 +32,12 @@
 					<div class="dropdown dropleft">
 					    <i type="button" class="fas fa-ellipsis-v m-2" data-toggle="dropdown"></i>
 					    <div class="dropdown-menu">
-							<a href="#" class="dropdown-item">Report</a>
+							<button  id="question_report_{{question.id}}" class="dropdown-item"
+							{% if question.id not in reported_questions %}
+								onclick="report('{{question.id}}','add_report','question')">Report</button>
+							{% else %}
+        						onclick="report('{{question.id}}','remove_report','question')">Remove report</button>
+							{% endif %}
 							{% if question.user == current_user %}
 								<button onclick="set('{{question.id}}','question')" class="dropdown-item delete">Delete</a>
 							{% endif %}
@@ -84,8 +89,13 @@
                     <div class="dropdown dropleft"><!--dropdown of report start-->
 					    <i type="button" class="fas fa-ellipsis-v m-2" data-toggle="dropdown"></i>
 					    <div class="dropdown-menu">
-					    	<a href="#" class="dropdown-item">Report</a>
-					    	<button href="#" onclick="set('{{answer.id}}','answer')" class="dropdown-item delete">Delete</button>
+							<button id="answer_report_{{answer.id}}" class="dropdown-item"
+							{% if answer.id not in reported_answers %}
+       							onclick="report('{{answer.id}}','add_report','answer')">Report</button>
+    						{% else %}
+        						onclick="report('{{answer.id}}','remove_report','answer'">Remove report</button>
+    						{% endif %}
+					    	<button onclick="set('{{answer.id}}','answer')" class="dropdown-item delete">Delete</button>
 					    </div>
 					</div><!--dropdown of edit report end-->
 
@@ -392,6 +402,37 @@
 			x.setRequestHeader('X-CSRFToken', csrftoken);
 			x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
 			x.send("question_id=" + id);
+		}
+		function report(id,operation,QorA)
+		{
+			var x = new XMLHttpRequest(); 
+			element_id = QorA+"_report_"+id;
+			x.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					//if the user didnt login, the response text will not be success . Then we will redirect to login page.
+					if (this.responseText != 'success') {       
+						window.location = this.responseURL;
+					}
+					else if(this.responseText == 'success'){
+					   handle = $("#"+element_id);
+					   if(operation == "add_report"){
+							handle.html("Remove report");
+							param = "report('"+id+"','remove_report','"+QorA+"')";
+							handle.attr('onclick',param);
+					   }
+					   else if(operation == "remove_report"){
+							handle.html("Report");
+							param = "report('"+id+"','add_report','"+QorA+"')";
+							handle.attr('onclick',param);   
+					   }
+					}
+				}
+			};
+			csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+			x.open('POST', '/public/forum/report', true);
+			x.setRequestHeader('X-CSRFToken', csrftoken);
+			x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			x.send("id="+id+"&operation="+operation+"&QorA="+QorA);
 		}
     </script>
 {% endblock %}

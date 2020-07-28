@@ -138,7 +138,7 @@ def question_brief_view(request, id):
         'reported_answers' : reported_answers,
         'relevant_questions' : relevant_questions
     }
-    return render(request, 'public_forum/question-view-new.html', context)
+    return render(request, 'public_forum/question-brief.html', context)
 
 
 @login_required
