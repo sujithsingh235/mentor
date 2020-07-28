@@ -3,8 +3,11 @@
 {% block content %}
 
 <center><h2> My answers</h2></center>
-{% for question_id,question,answer in list %}
-    <a href="/public/forum/{{question_id}}">{{question}}</a>
-    <p>{{answer}}</p>
+{% for question,answer in list %}
+    <a href="/public/forum/{{question.id}}">{{question.question}}</a>
+    <p>{{question.name}}@{{question.user}}</p><br>
+    <p>{{question.posted_time}}</p>
+    <p>{{answer.answer}}</p>
+    <a href="/public/forum/delete_answer?answer_id={{answer.id}}">Delete</a><br>
 {% endfor %}
 {% endblock %}

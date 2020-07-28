@@ -1,14 +1,117 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static 'public_forum/my_fav.css' %}">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+{% endblock %}
 
 {% block content %}
-    <center><h2>My favourite page</h2></center>
-    {% if exist %}
-        {% for question in questions %}
-            <ul>
-                <li><a href="/public/forum/{{question.id}}">{{question.question}}</a></li>
-            </ul>
-        {% endfor %}
-    {% else %}
-        <h2>No favourite questions</h2>
-    {% endif %}
+		{% csrf_token %}
+	{% if questions|length > 0 %}
+		<div class="container">
+			<div class="d-flex flex-column" id="favorite-flex">
+		{% for question in questions %}
+		    	<div class="media m-2"><!--start of media-->
+			    	<img src="https://hk-23.github.io/sample/female-profile.png" class="rounded-circle bg-white" id="img-mentor" style="width: 60px;height: 55px;">
+			    	<div class="media-body"><!--start of parent media body-->
+			     		<div class="px-3 sansserif"><!--Start of profile info-->
+				        	<h5 class="d-inline-block" style="font-weight:600">{{question.name}} <small style="word-spacing:2px">@{{question.user}}</small></h5>
+				        	<i type="button" style="color :#ffb700; font-weight:600" class="far fa-star float-right mt-1" id="favorite_question_{{question.id}}" onclick="remove_fav('{{question.id}}')"></i>
+                       		<h6 style="color:#999999;font-weight: 500">{{question.posted_time}}</h6> <!--April 5, 2019-->
+                    	</div><!--end of profile info-->
+                    	<div class="media"><!--start of inner media-->
+                 	    	<div class="media-body pl-3 my-2"><!--start of inner media body-->
+		        	        	<a href="/public/forum/{{question.id}}" id="question"><h5>{{question.question}}</h5></a>
+		                	</div><!--end of inner media body-->
+		            	</div><!--end of inner media-->
+		        	</div><!--end of parent media body-->
+		        	<div class="dropdown-divider"></div>
+            	</div><!--end of media-->
+		{% endfor %}
+	{% else %}
+		<div class="d-flex justify-content-center align-items-center" style="height:100vh">
+			<h1 class="font-weight-bold">No Favorite</h1>
+		</div>
+	{% endif %}
+		</div><!--end of d-flex(flex-column)-->
+	</div><!--end of container-fluid-->
+
+	<script>
+		$(document).ready(function(){
+
+			function responsive(){
+			    var a=$(window).width();
+               if(a<=425){
+               	    $("small").css("display","block");
+               }
+               else{
+               	   $("small").css("display","inline");
+               }
+			}
+
+           $(window).resize(function(){
+               responsive();
+           });
+
+           $(window).on("load",function(){
+              responsive();
+           });
+
+
+		});
+
+	function add_to_fav(id)      // This code is for fav
+    {
+        var x = new XMLHttpRequest();
+        x.onreadystatechange = function () {
+            if (this.readyState == 4) {
+				if(this.status == 200){
+                	if (this.responseText != 'success') {       //if the user didnt login, the response text will not be success . Then we will redirect to login page.
+                    	window.location = this.responseURL;
+                	}
+                	else if(this.responseText == 'success'){
+                    	$('#favorite_question_'+id).css('color','#ffb700');
+						$('#favorite_question_'+id).css('font-weight',600);
+                    	$('#favorite_question_'+id).attr('onclick','remove_fav('+id+')');
+					}
+				}
+				else if(this.status == 400){
+					alert('Something went wrong.')
+				}
+            }
+        };
+        csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        x.open('POST', '/public/forum/fav_add', true);
+        x.setRequestHeader('X-CSRFToken', csrftoken);
+        x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        x.send("question_id=" + id);
+    }
+    function remove_fav(id)      // This code is for removing fav
+    {
+        var x = new XMLHttpRequest();
+        x.onreadystatechange = function () {
+            if (this.readyState == 4) {
+				if(this.status == 200){
+                	//if the user didnt login, the response text will not be success . Then we will redirect to login page.
+                	if (this.responseText != 'success') {       
+                    	window.location = this.responseURL;
+                	}	
+                	else if(this.responseText == 'success'){
+						$('#favorite_question_'+id).css("color","black");
+						$('#favorite_question_'+id).css("font-weight",500);
+                    	$('#favorite_question_'+id).attr('onclick','add_to_fav('+id+')');
+					}
+				}
+				else if(this.status == 400){
+					alert('Something went wrong.')
+				}
+            }
+        };
+        csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        x.open('POST', '/public/forum/fav_remove', true);
+        x.setRequestHeader('X-CSRFToken', csrftoken);
+        x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        x.send("question_id=" + id);
+    }
+	</script>
 {% endblock %}

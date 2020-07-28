@@ -8,12 +8,14 @@
 		{% for question in questions %}  <!--already asked questions sorted descending by posted time-->
 			<li><a href=./{{question.id}}>
 				{{question.question}}</a></br>
-				User:{{question.user}}</br>
 				Time:{{question.posted_time}}
 			</li>
+				<a href="/public/forum/delete_question/{{question.id}}?to=goto my questions page">delete</a>
 		{% endfor %}	
 	{% else %}
-		<h2>No questions</h2>
+		<div class="d-flex justify-content-center align-items-center" style="height:100vh">
+			<h1 class="font-weight-bold">No Favorite</h1>
+		</div>
 	{% endif %}
 </ul>
 
