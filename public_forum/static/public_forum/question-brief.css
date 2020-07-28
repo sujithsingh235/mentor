@@ -1,0 +1,26 @@
+.sansserif {
+  font-family:Cambria,Arial, Helvetica,"sans-serif";
+}
+
+.description{
+	word-spacing:2px;
+	font-size:20px;
+}
+
+.rotation{
+	transform:rotate(180deg);
+}
+
+#list-of-comments p{
+	padding:1rem;
+}
+
+.favorite-change-in-color{
+	color:red;
+}
+
+.card-body a{
+	margin-top:12px;
+	text-decoration:none;
+	display:block;
+}

@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
+from django.utils import timezone
 from .models import *
 import datetime
 from django.http import HttpResponse,Http404,JsonResponse
 from .forms import answers_form
 from user_signup.models import mentee_model,mentor_model
-from .fun import get_relevant_question
+from .fun import get_relevant_question,time_convert
 import json
 
 from user_signup.decorators import *
@@ -33,10 +34,8 @@ def public_forum_view(request,page):
     if len(ques) != 0:
         exist = True
         for que in ques:
-            if datetime.datetime.today().date() == que.posted_time.date():
-                que.posted_time = que.posted_time.strftime('Today %I:%M %p')
-            else:
-                que.posted_time = que.posted_time.strftime('%b %d, %Y')
+            que.posted_time = time_convert(que.posted_time)
+            print(que.posted_time)
             associated_tags = tag_with_question_id.objects.filter(question_id=que.id).values_list("tag",flat=True)
             new_tup = (que,associated_tags)
             questions_with_tags.append(new_tup)
@@ -58,7 +57,6 @@ def new_question_view(request):
             return redirect('user_login')
         global tags 
         tags = list(tag.objects.all().values_list('tag_name',flat=True))
-        print(tags)     
         return render(request, 'public_forum/create_new_question.html')     
     question = questions()
     data = json.loads(request.body)
@@ -100,11 +98,12 @@ def question_brief_view(request, id):
         question = questions.objects.get(id=id)
     except:
         raise Http404("This question is not found in the database")
+    question.posted_time = time_convert(question.posted_time)
     user = mentee_model.objects.filter(username=question.user)
     if len(user) == 0:
         user = mentor_model.objects.filter(username=question.user)
     user = user[0]
-    answer = answers.objects.filter(question_id=id).order_by('-like')
+    answer = answers.objects.filter(question_id=id).order_by('-like','-posted_time')
     list_of_answers = []
     current_user = request.session.get('username', 'null')
     added_to_fav = favourite.objects.filter(user=current_user,question_id=id).exists() # checks whether the user already added this question to fav or not
@@ -122,6 +121,7 @@ def question_brief_view(request, id):
             for user in dict_liked_users:
                 liked_users.append(user['user'])
             likes_count = like.objects.filter(answer_id=ans.id).count()
+            ans.posted_time = time_convert(ans.posted_time)
             new_tuple = (ans, comments_count, likes_count, liked_users)
             list_of_answers.append(new_tuple)
     relevant_question_ids = get_relevant_question(associated_tags,id)
@@ -138,7 +138,7 @@ def question_brief_view(request, id):
         'reported_answers' : reported_answers,
         'relevant_questions' : relevant_questions
     }
-    return render(request, 'public_forum/question_brief.html', context)
+    return render(request, 'public_forum/question-view-new.html', context)
 
 
 @login_required
@@ -358,7 +358,10 @@ def my_favourite_view(request):
     print(question_ids)
     ques = questions.objects.filter(id__in = question_ids).order_by('-id')
     for que in ques:
-        que.posted_time = que.posted_time = que.posted_time.strftime('%B %d, %Y')
+        if datetime.datetime.today().date() == que.posted_time.date():
+            que.posted_time = que.posted_time.strftime('Today %I:%M %p')
+        else:
+            que.posted_time = que.posted_time.strftime('%b %d, %Y')
     context = {
         "questions" : ques
     }

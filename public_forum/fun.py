@@ -1,4 +1,5 @@
 from .models import tag_with_question_id
+from django.utils import timezone
 import random
 
 
@@ -15,3 +16,14 @@ def get_relevant_question(associated_tags,current_question_id):   # This method 
     if current_question_id in res_ids:
         res_ids.remove(current_question_id)   # Because the relevant questions should not contain the same question
     return res_ids
+
+
+
+def time_convert(posted_time):
+    today = timezone.localtime().date()
+    posted_time = timezone.localtime(value=posted_time)
+    if today == posted_time.date():
+        posted_time = posted_time.strftime('Today %I:%M %p') 
+    else:
+        posted_time = posted_time.strftime('%b %d, %Y')
+    return posted_time
