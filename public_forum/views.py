@@ -5,7 +5,7 @@ import datetime
 from django.http import HttpResponse,Http404,JsonResponse
 from .forms import answers_form
 from user_signup.models import mentee_model,mentor_model
-from .fun import get_relevant_question,time_convert
+from .fun import get_relevant_question,time_convert,random_tags
 import json
 
 from user_signup.decorators import *
@@ -30,7 +30,9 @@ def public_forum_view(request,page):
             ques = questions.objects.all().order_by('-posted_time')[start:stop]
     except:
         raise Http404("The page is not found in the database")
+
     questions_with_tags = []
+    rand_tags = random_tags()
     if len(ques) != 0:
         exist = True
         for que in ques:
@@ -45,9 +47,10 @@ def public_forum_view(request,page):
         'questions_with_tags': questions_with_tags,
         'exist': exist,
         'no_of_pages' : no_of_pages,
-        'current_page' : page
+        'current_page' : page,
+        'random_tags' : rand_tags
     }
-    return render(request, 'public_forum/public_forum.html', context)
+    return render(request, 'public_forum/public_forum.html', context)  
 
 
 def new_question_view(request):
@@ -82,8 +85,8 @@ def new_question_view(request):
     for this_tag in added_tags:
         new_ques_tag = tag_with_question_id(question_id=question.id,tag=this_tag)
         new_ques_tag.save()
-        if this_tag not in tags:
-            new_tag = tag(tag_name=this_tag)
+        if this_tag.lower() not in tags:
+            new_tag = tag(tag_name=this_tag.lower())
             new_tag.save()
     tags.clear()
     res = {
@@ -294,6 +297,8 @@ def my_questions_view(request):
         return redirect('user_login')
     else:
         ques = questions.objects.filter(user=user).order_by('-posted_time')
+        for que in ques:
+            que.posted_time = time_convert(que.posted_time)
         if len(ques) != 0:
             exist = True
         else:
@@ -302,7 +307,7 @@ def my_questions_view(request):
             'questions': ques,
             'exist': exist
         }
-        return render(request, 'public_forum/my_questions.html', context)
+        return render(request, 'public_forum/my_questions.html', context)   
 
 
 def my_answers_view(request):
@@ -324,7 +329,7 @@ def my_answers_view(request):
         context = {
             'list': lst
         }
-        return render(request, 'public_forum/my_answers.html', context)
+        return render(request, 'public_forum/my_answers.html', context)  
 
 
 def fav_view(request):
@@ -461,8 +466,33 @@ def delete_question_view(request,id):
     if to == 'goto my questions page':
         return redirect('/public/forum/my_questions')
     return redirect('/public/forum/page-1',permanent=True)
-    
-    
+        
+
+def tag_question_view(request):
+    tag = request.GET.get('tag','null')
+    if tag=='null':
+        raise Http404('The tag is not found')
+    ids = list(tag_with_question_id.objects.filter(tag=tag).values_list('question_id',flat=True).distinct())
+    ques = questions.objects.filter(id__in=ids).order_by('-posted_time')
+    questions_with_tags = []
+    rand_tags = random_tags()
+    if len(ques) != 0:
+        exist = True
+        for que in ques:
+            que.posted_time = time_convert(que.posted_time)
+            print(que.posted_time)
+            associated_tags = tag_with_question_id.objects.filter(question_id=que.id).values_list("tag",flat=True)
+            new_tup = (que,associated_tags)
+            questions_with_tags.append(new_tup)
+    else:
+        exist = False  # No questions to be displayed
+    context = {
+        'questions_with_tags': questions_with_tags,
+        'exist': exist,
+        'random_tags' : rand_tags,
+        'tag' : tag
+    }
+    return render(request,'public_forum/tag_question_forum_view.html',context)
 
 
 

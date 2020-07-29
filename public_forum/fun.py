@@ -1,4 +1,4 @@
-from .models import tag_with_question_id
+from .models import tag_with_question_id,tag
 from django.utils import timezone
 import random
 
@@ -27,3 +27,13 @@ def time_convert(posted_time):
     else:
         posted_time = posted_time.strftime('%b %d, %Y')
     return posted_time
+
+def random_tags():
+    res = []
+    tags = list(tag.objects.all().values_list('tag_name',flat=True))
+    for i in range(10):
+        rand_tag = random.choice(tags)
+        tags.remove(rand_tag)
+        res.append(rand_tag)
+    print(res)
+    return res

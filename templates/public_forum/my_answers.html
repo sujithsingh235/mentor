@@ -1,13 +1,84 @@
 {% extends 'base.html' %}
-
-{% block content %}
-
-<center><h2> My answers</h2></center>
-{% for question,answer in list %}
-    <a href="/public/forum/{{question.id}}">{{question.question}}</a>
-    <p>{{question.name}}@{{question.user}}</p><br>
-    <p>{{question.posted_time}}</p>
-    <p>{{answer.answer}}</p>
-    <a href="/public/forum/delete_answer?answer_id={{answer.id}}">Delete</a><br>
-{% endfor %}
+{% load static %}
+{% block header %}
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+	<link rel="stylesheet" href="{% static 'public_forum/my_answers.css' %}">
 {% endblock %}
+{% block content %}
+{% if list|length > 0%}
+{% for question,answer in list %}
+	<div class="container-fluid">
+		<div class="parent-for-everything">
+			<div class="media my-2"><!--start of media-->
+			    <img src="https://hk-23.github.io/sample/female-profile.png" class="rounded-circle bg-white" id="img-mentor" style="width: 60px;height: 55px;">
+			    <div class="media-body"><!--start of parent media body-->
+			     	<div class="mx-3 sansserif"><!--Start of profile info-->
+				        <h5 style="font-weight:600">{{question.name}} <small style="word-spacing:2px">@{{question.user}}</small></h5>
+                        <h6 style="color:#999999;font-weight: 500">{{question.posted_time}}</h6>
+                    </div><!--end of profile info-->
+                </div><!--end of parent media body-->
+            </div><!--end of media-->
+            
+            <div class="row">
+            <div class="offset-0 offset-md-1 offset-lg-0 my-2 col"><!--Overall Question and answers div start-->
+		        <a href="#" class="question"><h5>{{question.question}}</h5></a>
+		        <!--1st question start-->
+		        <div class="mt-3 overall-answers-div"><!--Overall answers div start-->
+		        	<h5>Your answer</h5>
+
+		        	<div class="answer-div"><!--answers along with delete icon div start-->
+		        	    <i type="button" onclick="set_id_for_modalbox('{{answer.id}}')" class="fas fa-trash  delete-icon float-right my-2 mx-3"></i>
+		        	    <!--answer para start-->
+						<p class="sansserif description p-4" style="background-color:#dbdcb9;clear:right"><!--Parargraph has a default of some marin pixels-->
+							{{answer.answer}}
+						</p>
+                    </div><!--answers along with the delete icon div end-->
+                </div><!--Overall answer div end-->
+            </div><!--Overall Question and answers div end-->
+        </div>
+    </div>
+   {% endfor %}
+   <div class="container-fluid">
+	<div class="modal" id="modal-delete">
+            	<div class="modal-dialog">
+            		<div class="modal-content">
+            			<div class="modal-body">
+            	            <h6>Are you sure want to delete?</h6>
+            	            <div class="float-right">
+            	                <button type="button" class="btn btn-warning" id="cancel-close-modal">Cancel</button>
+            	                <a class="btn btn-primary" href="" id="ok-close-modal">Ok</a>
+            	            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+                         
+		<hr style="height:1px;background-color:#ccccb2;">
+	</div>
+{% else %}
+	<div class="d-flex justify-content-center align-items-center" style="height:100vh">
+		<h1 class="font-weight-bold d-none d-lg-block">No Questions Posted Yet</h1>
+		<h5 class="d-lg-none">No Answers Posted Yet</h5>
+	</div>
+{% endif %}
+    <script>
+    	$(document).ready(function(){
+    		  $(".delete-icon").click(function(){
+                $("#modal-delete").modal({backdrop:"static"});
+            });
+
+    		$("#cancel-close-modal").click(function(){
+            	$("#modal-delete").modal("hide");
+            });
+
+            $("#ok-close-modal").click(function(){
+            	$("#modal-delete").modal("hide");
+            });
+		});
+	function set_id_for_modalbox(id){
+		link = "/public/forum/delete_answer?answer_id="+id;
+		$("#ok-close-modal").attr("href",link);
+	}
+    </script>
+{% endblock %}   
+

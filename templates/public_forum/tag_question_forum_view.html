@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="{% static 'public_forum/public_forum.css' %}">
 {% endblock %}
 {% block content %}
+{% if exist %}
     <div class="container-fluid ">
         <div class="row mx-0">
 
@@ -49,32 +50,7 @@
                     </div>
                 </div>
             {% endfor %}
-                <ul class="pagination justify-content-center">
-                    {% if current_page|add:"-1" < 1 %}
-                        <li class="page-item disabled">
-                            <a href="#" class="page-link"><i class="fas fa-angle-double-left"></i></a>
-                        </li>
-                    {% else %}
-                        <li class="page-item">
-                            <a href="./page-{{current_page|add:'-1'}}" class="page-link"><i class="fas fa-angle-double-left"></i></a>
-                        </li>
-                    {% endif %}
-                    <li class="page-item active">
-                        <a href="#" class="page-link">{{current_page}}</a>
-                    </li>
-                    {% if current_page|add:"1" > no_of_pages %}
-                        <li class="page-item disabled">
-                            <a href="#" class="page-link"><i class="fas fa-angle-double-right"></i></a>
-                        </li>
-                    {% else %}
-                        <li class="page-item">
-                            <a href="./page-{{current_page|add:'1'}}" class="page-link"><i class="fas fa-angle-double-right"></i></a>
-                        </li>
-                    {% endif %}
-                </ul>
-
             </div>
-
             <div class="col d-none d-lg-block">
                 <div class="card p-0 mt-2 sticky-top shadow">
                     <div class="card-body p-2">
@@ -87,4 +63,10 @@
             </div>
         </div>
     </div>
+{% else %}
+    <div class="d-flex justify-content-center align-items-center" style="height:100vh">
+        <h1 class="font-weight-bold d-none d-lg-block">Sorry, There is no question related to "{{tag}}".</h1>
+        <h5 class="d-lg-none">Sorry, There is no question related to "{{tag}}".</h5>
+    </div>
+{% endif %}
 {% endblock %}

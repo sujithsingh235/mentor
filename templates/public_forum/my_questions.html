@@ -1,22 +1,85 @@
 {% extends 'base.html' %}
-
+{% block header %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+{% endblock %}
 {% block content %}
-
-<center><h2> My questions</h2></center>
-<ul>
 	{% if exist %}
-		{% for question in questions %}  <!--already asked questions sorted descending by posted time-->
-			<li><a href=./{{question.id}}>
-				{{question.question}}</a></br>
-				Time:{{question.posted_time}}
-			</li>
-				<a href="/public/forum/delete_question/{{question.id}}?to=goto my questions page">delete</a>
-		{% endfor %}	
-	{% else %}
-		<div class="d-flex justify-content-center align-items-center" style="height:100vh">
-			<h1 class="font-weight-bold">No Favorite</h1>
+	{% for question in questions %}  <!--already asked questions sorted descending by posted time-->
+	<div class="container">
+		<div class="row mb-3 bg-light">
+			<div class="col-12 col-lg-3 text-muted time-col pt-2">
+				   
+				    <!-- <time>12:15</time><p class="d-inline-block">am</p> -->
+				    <time>{{question.posted_time}}</time>
+			</div>
+		    <div class="col-9 col-lg-6 my-questions-col pt-2">
+				<h5><a href="./{{question.id}}">{{question.question}}</a></h5>
+			</div>
+			<div class="col-2 pt-2">
+				<i type="button" onclick="set_id_for_modalbox('{{question.id}}')" class="fas fa-trash fa-sm delete-icon"></i>
+			</div>
+		</div>  
+	</div>  
+	{% endfor %}     
+    <div class="container">
+		<div class="modal" id="modal-delete">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-body">
+						<h6>Are you sure want to delete?</h6>
+						<div class="d-flex justify-content-end">
+							<button type="button" class="btn btn-warning cancel-in-modal-delete">Cancel</button>
+							<a id="modal-ok-button" href="#" class="btn btn-primary ok-in-modal-delete mx-2">Ok</a>
+						</div>
+					</div>
+				</div>
+			</div>
 		</div>
+	</div>
+	{% else %}
+	<div class="d-flex justify-content-center align-items-center" style="height:100vh">
+		<h1 class="font-weight-bold d-none d-lg-block">No Questions Posted Yet</h1>
+		<h5 class="d-lg-none">No Questions Posted Yet</h5>
+	</div>
 	{% endif %}
-</ul>
 
+	<script>
+		$(document).ready(function(){
+           $(window).on("load",function(){
+              if($(window).width()<992){
+              	$(".time-col").removeClass("d-flex justify-content-end");
+              }
+                else
+              {
+              	$(".time-col").addClass("d-flex justify-content-end");
+              }
+           });
+
+            $(window).resize(function(){
+              if($(window).width()<992){
+              	$(".time-col").removeClass("d-flex justify-content-end");
+              }
+              else
+              {
+              	$(".time-col").addClass("d-flex justify-content-end");
+              }
+           });
+
+            $(".delete-icon").click(function(){
+            	$("#modal-delete").modal({backdrop:"static"});
+            });
+
+            $(".ok-in-modal-delete").click(function(){
+            	$("#modal-delete").modal("hide");
+            });
+            $(".cancel-in-modal-delete").click(function(){
+            	$("#modal-delete").modal("hide");
+            });
+
+		});
+	function set_id_for_modalbox(id){
+		link = "/public/forum/delete_question/"+id+"?to=goto my questions page";
+		$("#modal-ok-button").attr("href",link);
+	}
+	</script>
 {% endblock %}

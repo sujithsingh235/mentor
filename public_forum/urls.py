@@ -18,5 +18,6 @@ urlpatterns = [
     path('my_favourite',my_favourite_view),
     path('report',report_view),
     path('get_tags',get_tags_view),
-    path('delete_question/<int:id>',delete_question_view)
+    path('delete_question/<int:id>',delete_question_view),
+    path('tag_question_forum',tag_question_view)
 ]
