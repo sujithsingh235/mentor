@@ -37,7 +37,6 @@ def public_forum_view(request,page):
         exist = True
         for que in ques:
             que.posted_time = time_convert(que.posted_time)
-            print(que.posted_time)
             associated_tags = tag_with_question_id.objects.filter(question_id=que.id).values_list("tag",flat=True)
             new_tup = (que,associated_tags)
             questions_with_tags.append(new_tup)
@@ -113,7 +112,6 @@ def question_brief_view(request, id):
     reported_questions = report.objects.filter(user=current_user,QorA="question").values_list("QorA_id",flat=True)
     reported_answers = report.objects.filter(user=current_user,QorA="answer").values_list("QorA_id",flat=True)
     associated_tags = tag_with_question_id.objects.filter(question_id=id).values_list("tag",flat=True)
-    print(associated_tags)
     no_of_answers = len(answer)
     if no_of_answers != 0:    
         for ans in answer:		# This will count the number of comments and likes
@@ -128,9 +126,7 @@ def question_brief_view(request, id):
             new_tuple = (ans, comments_count, likes_count, liked_users)
             list_of_answers.append(new_tuple)
     relevant_question_ids = get_relevant_question(associated_tags,id)
-    print(relevant_question_ids)
     relevant_questions = questions.objects.filter(id__in=relevant_question_ids)
-    print(relevant_questions)
     context = {
         'question': question,
         'tags' : associated_tags,
@@ -186,7 +182,7 @@ def comments_view(request, id):
         new_comment = comments(user=user, posted_time=posted_time, comment=comment, answer_id=id, name=name.name)
         new_comment.save()
     
-    comment = comments.objects.filter(answer_id=id).order_by('-posted_time')
+    comment = comments.objects.filter(answer_id=id).order_by('posted_time')
     if len(comment) != 0:
         exist = True
     else:
@@ -196,34 +192,6 @@ def comments_view(request, id):
         'exist': exist
     }
     return render(request, "public_forum/comments.html", context)
-
-
-@login_required
-def edit_answer_view(request, id, question_id):
-    if request.method == "GET":
-        current_user = request.session.get('username', 'null')
-        try:
-            ans = answers.objects.get(id=id)
-        except:
-            raise Http404("The answer is not found in the database")
-        if current_user == 'null':
-            return redirect('user_login')
-        elif current_user != ans.user:
-            return redirect('/')
-        text = ans.answer
-        context = {
-            'text': text
-        }
-        return render(request, "public_forum/write_answer.html", context)
-    elif request.method == 'POST':
-        try:
-            ans = answers.objects.get(id=id)
-        except:
-            raise Http404("The answer is not found in the database")
-        ans.answer = request.POST.get('ans')
-        ans.posted_time = datetime.datetime.now()
-        ans.save()
-        return redirect('/public/forum/'+str(question_id))
 
 
 def delete_answer_view(request):
@@ -262,7 +230,6 @@ def add_like_view(request):
     except:
         raise Http404("The answer is not found in the database")
     like_count = ans_obj.like + 1
-    print(like_count)
     ans_obj.like = like_count
     ans_obj.save()
     return HttpResponse('success')
@@ -283,7 +250,6 @@ def remove_like_view(request):
     except:
         raise Http404("The answer object is not found in the database")
     like_count = ans_obj.like - 1
-    print(like_count)
     ans_obj.like = like_count
     ans_obj.save()
     return HttpResponse('success')
@@ -360,7 +326,6 @@ def fav_remove_view(request):
 def my_favourite_view(request):
     user = request.session.get('username','null')
     question_ids = favourite.objects.filter(user=user).values_list('question_id',flat=True)
-    print(question_ids)
     ques = questions.objects.filter(id__in = question_ids).order_by('-id')
     for que in ques:
         if datetime.datetime.today().date() == que.posted_time.date():
@@ -419,7 +384,6 @@ def report_view(request):
 
 def get_tags_view(request):
     value = request.GET.get('value','null')
-    print(value)
     global tags
     res = []
     if value != "":
@@ -431,7 +395,6 @@ def get_tags_view(request):
             if i>5:
                 break
         res.sort()
-    print(res)
     data = {
         "status" : 'ok',
         "tags" : res
@@ -480,7 +443,6 @@ def tag_question_view(request):
         exist = True
         for que in ques:
             que.posted_time = time_convert(que.posted_time)
-            print(que.posted_time)
             associated_tags = tag_with_question_id.objects.filter(question_id=que.id).values_list("tag",flat=True)
             new_tup = (que,associated_tags)
             questions_with_tags.append(new_tup)

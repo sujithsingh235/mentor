@@ -109,7 +109,7 @@
                 
 
                 <div class="m-3">   <!--comment button and upvote div start-->
-                    <button type="button" class="btn btn-info mr-4" data-target="#list-of-comments" data-toggle="collapse" id="comment-button"><span class="badge badge-light mr-1 mt-1">{{no_of_comments}}</span> Comments <i class="fas fa-caret-down ml-1" id="comments-dropdown-icon"></i></button>
+                    <a href="comments/{{answer.id}}" class="btn btn-info mr-4"><span class="badge badge-light mr-1 mt-1">{{no_of_comments}}</span> Comments </a>
 				
 				{% if current_user != answer.user %}  <!--The like option should not be available for the creator of that answer-->
 					<i id="like_id_{{answer.id}}" class="fas fa-thumbs-up like-button" type="button" 
@@ -128,18 +128,6 @@
 					<p id="like_count_id_{{answer.id}}" class="d-inline ml-2">{{no_of_likes}}</p>
 				</div><!--comment button and upvote div end-->
 				{% endif %}
-			
-			
-            <div class="collapse mx-1 ml-sm-4 p-4" id="list-of-comments"><!--collapse comment div start-->
-                <div class="sansserif" id="comment-workplace"  style="overflow-y:scroll !important; max-height:200px"><!--comments div start-->
-                </div> <!--comments div part end-->
-                <div class="input-group rounded my-2" id="comment-input-group"><!--comment textbox div or input group start-->
-                	<input type="text" class="form-control border border-dark" id="comment-textbox-{{answer.id}}" placeholder="Enter your comment...">
-                	<div class="input-group-append">
-                	    <button type="submit" class="btn btn-info" id="enter-the-comment"><i class="fas fa-paper-plane"></i></button>
-                	</div>
-                </div><!--comment textbox div or input group end-->
-			</div><!--collapse comment div end-->
 			{% endfor %}
 			{% else %}
             <div class="d-flex justify-content-center align-items-center" style="height:200px;border:1px solid grey">
@@ -318,10 +306,7 @@
             	$("#answer-textbox").val("");
             	$("#answer-textbox").focus();
             });
-
-            $("#comment-button").click(function(){
-               $("#comments-dropdown-icon").toggleClass("rotation");
-            });           
+         
             $("#answer-dropdown-button").click(function(){
             	$("#answer-dropdown-icon").toggleClass("rotation");
             });

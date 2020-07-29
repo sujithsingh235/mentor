@@ -80,7 +80,10 @@
                     <div class="card-body p-2">
                         <h5 class="card-header mb-3 bg-primary text-light text-center">Topics You Might Be Interested</h5>
                         {% for tag in random_tags %}
-                            <a href="tag_question_forum?tag={{tag}}" class="btn btn-outline-info w-100 my-1">{{tag}}</a>
+                            <form action="tag_question_forum">
+                                <input type="hidden" name="tag" value="{{tag}}">
+                                <input type="submit" value="{{tag}}" class="btn btn-outline-info w-100 my-1">
+                            </form>
                         {% endfor %}
                     </div>
                 </div>
