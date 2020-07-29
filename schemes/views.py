@@ -22,9 +22,15 @@ def government_schemes_view(request):
             abb = None
         scheme_tup.append((lst[0],lst[1],abb))
     print(scheme_tup)
+    auth_uname = request.session.get('username',None)
+    auth_uid = request.session.get('id',None)
+    auth_role = request.session.get('role',None)
     context = {
         'schemes' : scheme_tup,
-        'exist' : exist
+        'exist' : exist,
+        'auth_uname' : auth_uname,
+        'auth_uid' : auth_uid,
+        'auth_role' : auth_role
     }
     return render(request,'schemes/schemes.html',context)
 
@@ -42,10 +48,15 @@ def scheme_explain_view(request,id):
     extra_schemes = scheme.objects.exclude(id=id)
     if len(extra_schemes) > 4:
         extra_schemes = extra_schemes[:4]
-
+    auth_uname = request.session.get('username',None)
+    auth_uid = request.session.get('id',None)
+    auth_role = request.session.get('role',None)
     context = {
         'scheme' : schemes,
         'link_exists' : link_exists,
-        'extra_schemes' : extra_schemes
+        'extra_schemes' : extra_schemes,
+        'auth_uname' : auth_uname,
+        'auth_uid' : auth_uid,
+        'auth_role' : auth_role
     }
     return render(request,'schemes/scheme_explain.html',context)

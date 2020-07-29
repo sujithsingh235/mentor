@@ -42,12 +42,20 @@ def public_forum_view(request,page):
             questions_with_tags.append(new_tup)
     else:
         exist = False  # No questions to be displayed
+    print(request.session)
+    auth_uname = request.session.get('username',None)
+    auth_uid = request.session.get('id',None)
+    auth_role = request.session.get('role',None)
     context = {
         'questions_with_tags': questions_with_tags,
         'exist': exist,
         'no_of_pages' : no_of_pages,
         'current_page' : page,
-        'random_tags' : rand_tags
+        'random_tags' : rand_tags,
+        'auth_uname' : auth_uname,
+        'auth_uid' : auth_uid,
+        'auth_role' : auth_role
+
     }
     return render(request, 'public_forum/public_forum.html', context)  
 
@@ -127,6 +135,9 @@ def question_brief_view(request, id):
             list_of_answers.append(new_tuple)
     relevant_question_ids = get_relevant_question(associated_tags,id)
     relevant_questions = questions.objects.filter(id__in=relevant_question_ids)
+    auth_uname = request.session.get('username',None)
+    auth_uid = request.session.get('id',None)
+    auth_role = request.session.get('role',None)
     context = {
         'question': question,
         'tags' : associated_tags,
@@ -135,7 +146,10 @@ def question_brief_view(request, id):
         'fav' : added_to_fav,
         'reported_questions' : reported_questions,
         'reported_answers' : reported_answers,
-        'relevant_questions' : relevant_questions
+        'relevant_questions' : relevant_questions,
+        'auth_uname' : auth_uname,
+        'auth_uid' : auth_uid,
+        'auth_role' : auth_role
     }
     return render(request, 'public_forum/question-brief.html', context)
 
@@ -147,9 +161,15 @@ def write_answer_view(request, id):
             question = questions.objects.get(id=id)
         except:
             raise Http404("The question is not found in the database")
+        auth_uname = request.session.get('username',None)
+        auth_uid = request.session.get('id',None)
+        auth_role = request.session.get('role',None)
         context = {
             'question': question,
-            'placeholder': "Enter your answer..."
+            'placeholder': "Enter your answer...",
+            'auth_uname' : auth_uname,
+            'auth_uid' : auth_uid,
+            'auth_role' : auth_role
         }
         return render(request, "public_forum/write_answer.html", context)
     else:
@@ -187,9 +207,15 @@ def comments_view(request, id):
         exist = True
     else:
         exist = False
+    auth_uname = request.session.get('username',None)
+    auth_uid = request.session.get('id',None)
+    auth_role = request.session.get('role',None)
     context = {
         'comments': comment,
-        'exist': exist
+        'exist': exist,
+        'auth_uname' : auth_uname,
+        'auth_uid' : auth_uid,
+        'auth_role' : auth_role
     }
     return render(request, "public_forum/comments.html", context)
 
@@ -269,9 +295,15 @@ def my_questions_view(request):
             exist = True
         else:
             exist = False  # No questions to be displayed
+        auth_uname = request.session.get('username',None)
+        auth_uid = request.session.get('id',None)
+        auth_role = request.session.get('role',None)
         context = {
             'questions': ques,
-            'exist': exist
+            'exist': exist,
+            'auth_uname' : auth_uname,
+            'auth_uid' : auth_uid,
+            'auth_role' : auth_role
         }
         return render(request, 'public_forum/my_questions.html', context)   
 
