@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block header %}
+<!-- FontAwesome -->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"
+		integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+	<style>
+		.name th {
+			font-family: Cambria, Arial, Helvetica, "sans-serif";
+		}
+
+		.btn-cust {
+			transition: transform 80ms ease-in;
+		}
+
+		.btn-cust:active {
+			transform: scale(0.95);
+		}
+
+		.btn-cust:active {
+			outline: none !important;
+		}
+	</style>
+{% endblock%}
+{% block content %}
+	<div class="container my-3">
+		<div class="card shadow-sm my-3 w-100">
+			<div class="card-header pb-0">
+				<div class="card-title">Request Details</div>
+			</div>
+			<div class="card-body">
+				<div class="table-responsive">
+					<table class="table table-striped">
+						<caption class="d-sm-block d-md-none">Swipe&nbsp;Right&nbsp;<i class="fas fa-scroll"></i>
+						</caption>
+						<thead class="thead-dark">
+							<tr>
+								<th>Token</th>
+								<th>Mentor</th>
+								<th>Status</th>
+								<th>Date/Time</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+						{% for request in requests %}
+							<tr>
+								<td>#{{request.id}}</td>
+								<td>
+									<h6 class="name">{{request.mentor.name}}</h6><small class="text-muted">@{{request.mentor.username}}</small>
+								</td>
+								<td>
+									<h6><span class="badge badge-success badge-pill px-3 py-1">Accepted</span></h6>
+								</td>
+								<td><time class="text-muted">{{request.request_posted_time}}</time></td>
+								<td><button type="button"
+										class="btn btn-outline-primary rounded-lg btn-cust">Pay&nbsp;Now</button></td>
+							</tr>
+						{% endfor %}
+							
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}

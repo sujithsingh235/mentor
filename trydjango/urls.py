@@ -19,7 +19,7 @@ from django.urls import path, reverse,include
 from chat.views import *
 from homepage.views import *
 from user_signup.views import *
-from public_forum.views import public_forum_view
+
 
 urlpatterns = [
 # Homepage Views
@@ -44,7 +44,8 @@ urlpatterns = [
     path('public/forum/',include('public_forum.urls')),
 # Government schemes
     path('government-schemes/',include('schemes.urls')),
-
+# Request
+    path('request/',include('request.urls')),
 # News
     path('news/',include('news.urls')),
 # Admin

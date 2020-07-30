@@ -2,6 +2,7 @@
 {% load static %}
 {% block header %}
     <link rel="stylesheet" type="text/css" href="{% static 'news/news_home.css' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
 {% endblock %}
 {% block content %}
     <div class="container-fluid p-0">
@@ -15,7 +16,7 @@
                     <a href="?type={{topic}}" class="btn btn-outline-{{button_type}} m-1">{{topic|title}}</a>
                 {% endif %}
             {% endfor %}
-            <a href="./request_news" class="btn btn-primary m-1">Request news</a>
+            <a href="./request_news" class="btn btn-primary m-1">Refresh&nbsp;<i class="fas fa-redo-alt"></i></a>
         </div>
 
         <div class="container my-2 py-2">
