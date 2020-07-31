@@ -1,0 +1,11 @@
+{% extends 'base.html' %}
+{% block content %}
+    <center>mentor's request page</center>
+    {% for request in requests %}
+        <p>{{request.mentee.name}}</p><br>
+        <p>{{request.mentee.username}}</p><br>
+        <a href="mentor_requests/{{request.mentee_request.id}}"><p>{{request.mentee_request.title}}</p></a><br>
+        <p>{{request.status}}</p><br>
+        <p>==========================================</p><br>
+    {% endfor %}
+{% endblock %}

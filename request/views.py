@@ -1,16 +1,21 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render,redirect,reverse
 from datetime import datetime
-from django.http import JsonResponse
-from .models import mentee_request_model
-from user_signup.models import mentor_model
+from django.http import JsonResponse,HttpResponse
+from .models import mentee_request_model,mentor_request_model
+from user_signup.models import mentor_model,mentee_model
 from public_forum.fun import time_convert
+from user_signup.decorators import *
 
 # Create your views here.
 def request_view(request,mentor_id):
     
     mentee_id = request.session.get('id',None)
+    role = request.session.get('role',None)
     if mentee_id is None:
         return redirect('user_login')
+    elif role is None or role !='mentee':
+        messages.warning(request,'mentor cannot goto this page')
+        return redirect('/')
     if request.method == "POST":
         print('came here')
         title = request.POST.get('title')
@@ -43,7 +48,9 @@ def request_view(request,mentor_id):
             return JsonResponse(res)
         else:
             mentor = mentor_model.objects.get(id=mentor_id)
-            new_request = mentee_request_model.objects.create(
+            amount = (int(hours_per_day)*int(no_of_days)*mentor.pay_per_month)
+            print(amount)
+            new_request = mentee_request_model(
                 mentor = mentor,
                 mentee_id = mentee_id,
                 title = title,
@@ -54,25 +61,38 @@ def request_view(request,mentor_id):
                 to_time = to_time,
                 note = note,
                 status = 'pending',
-                request_posted_time = datetime.now()
+                request_posted_time = datetime.now(),
             )
+            new_request.save()
+            m = mentor_request_model(
+                mentor_id = mentor_id,
+                mentee_request = new_request,
+                mentee = mentee_model.objects.get(id=mentee_id),
+                status = 'new'
+            )
+            m.save()
+            url = "mentee/"+str(mentee_id)+"/my_request"
             res = {
                 "status" : "ok",
-                "url": "my_request"
+                "url": url
             }
             return JsonResponse(res)
     context = {
-        'mentor_id' : mentor_id
+        'mentor_id' : mentor_id,
+        'mentee_id' : mentee_id
     }
     return render(request,'request/request.html',context)
 
 
 
-def my_request_view(request):
+def my_request_view(request,mentee_id):
     role = request.session.get('role',None)
     if role is None or role.lower() == 'others' or role.lower() == 'mentor':
-        return redirect('user_signup')
+        messages.warning(request,"mentees only can access this page")
+        return redirect('user_login')
     id = request.session.get('id')
+    if mentee_id != id :
+        return redirect('/')
     my_request = mentee_request_model.objects.filter(mentee_id=id).order_by('-request_posted_time')
     for req in my_request:
         req.request_posted_time = time_convert(req.request_posted_time)
@@ -83,5 +103,69 @@ def my_request_view(request):
     return render(request,'request/my_request.html',context)
 
 
-def request_brief_view(request,id):
-    return render(request,'request/request_brief.html')
+def request_cancel_view(request,mentee_id):
+    role = request.session.get('role',None)
+    id = request.session.get('id',None)
+    print(role)
+    print(id)
+    if role is None or role!='mentee' or id!=mentee_id:
+        return redirect('/')
+
+    request_id = request.POST.get('request_id')
+    req = mentee_request_model.objects.get(id=request_id)
+    req.status = 'cancelled'
+    req.save()
+
+    req = mentor_request_model.objects.get(mentee_request__id=request_id)   
+    req.delete()
+    print(req)
+
+    return redirect('my_request',mentee_id=mentee_id)
+
+
+def request_brief_view(request,request_id):
+    id = request.session.get('id')
+    req = mentor_request_model.objects.get(mentee_request_id=request_id)
+    print(req)
+    context = {
+        'request' : req
+    }
+    return render(request,'request/request_brief.html',context)
+
+
+@login_required
+def mentor_requests_view(request):
+    id = request.session.get('id',None)
+    role = request.session.get('role',None)
+    print(id)
+    print(role)
+    if id is None or role != "mentor":
+        return redirect('/')
+    mentor_request = mentor_request_model.objects.filter(mentor_id=id)
+    print(mentor_request)
+    context = {
+        'requests' : mentor_request
+    }
+    return render(request,'request/mentor_request.html',context)
+
+
+def mentor_oper_view(request,oper,mentee_id,request_id):
+    print(oper)
+    print(mentee_id)
+    if oper == 'accept':
+        req = mentee_request_model.objects.get(id=request_id)
+        req.status = 'accepted'
+        req.save()
+        req = mentor_request_model.objects.get(mentee_request_id=request_id)
+        req.status = "accepted"
+        req.save()
+    elif oper == 'reject':
+        req = mentee_request_model.objects.get(id=request_id)
+        req.status = 'rejected'
+        req.save()
+        req = mentor_request_model.objects.get(mentee_request_id=request_id)
+        req.status = "rejected"
+        req.save()
+    return redirect('/request/mentor/mentor_requests',permanent=True)
+    
+    

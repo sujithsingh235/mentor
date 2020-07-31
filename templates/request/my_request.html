@@ -49,11 +49,33 @@
 									<h6 class="name">{{request.mentor.name}}</h6><small class="text-muted">@{{request.mentor.username}}</small>
 								</td>
 								<td>
-									<h6><span class="badge badge-success badge-pill px-3 py-1">Accepted</span></h6>
+									{% if request.status == 'accepted' %}
+										<h6><span class="badge badge-success badge-pill px-3 py-1">Accepted</span></h6>
+									{% elif request.status == 'pending' %}
+										<h6><span class="badge badge-info badge-pill px-3 py-1">Pending</span></h6>
+									{% elif request.status == 'rejected' %}
+										<h6><span class="badge badge-danger badge-pill px-3 py-1">Rejected</span></h6>
+									{% elif request.status == 'cancelled' %}
+										<h6><span class="badge badge-warning badge-pill px-3 py-1">Cancelled</span></h6>
+									{% endif %}
 								</td>
 								<td><time class="text-muted">{{request.request_posted_time}}</time></td>
-								<td><button type="button"
-										class="btn btn-outline-primary rounded-lg btn-cust">Pay&nbsp;Now</button></td>
+								{% if request.status == 'accepted' %}
+									<td><button type="button" class="btn btn-outline-primary rounded-lg btn-cust">Pay&nbsp;Now</button></td>
+								{% elif request.status == 'pending' %}
+									<td>
+										<form action="my_request/cancel"method="POST">
+											{% csrf_token %}
+											<input type="hidden" name="request_id" value="{{request.id}}">
+											<input type="submit" class="btn btn-outline-warning rounded-lg btn-cust" value="Cancel">
+										</form>
+									</td>
+								{% elif request.status == 'rejected' %}
+									<td><button type="button" class="btn btn-outline-secondary rounded-lg btn-cust">Reason</button></td>
+								{% else %}
+									<td></td>
+								{% endif %}
+
 							</tr>
 						{% endfor %}
 							

@@ -95,8 +95,10 @@
        							onclick="report('{{answer.id}}','add_report','answer')">Report</button>
     						{% else %}
         						onclick="report('{{answer.id}}','remove_report','answer'">Remove report</button>
-    						{% endif %}
-					    	<button onclick="set('{{answer.id}}','answer')" class="dropdown-item delete">Delete</button>
+							{% endif %}
+							{% if answer.user == current_user %}
+								<button onclick="set('{{answer.id}}','answer')" class="dropdown-item delete">Delete</button>
+							{% endif %}
 					    </div>
 					</div><!--dropdown of edit report end-->
 
@@ -149,17 +151,7 @@
                 </div>
             </div>
             
-            <template>
-                    
-                <div id="comment-template"> 
-                    <div class="d-flex comment-profile-div">   
-                	    <h5 style="font-weight:500" class="comment-username">@sujithsingh235512345</h5>
-                	    <small style="color:#999999" class="ml-auto"><time>Jun 15 </time>at <time>9:38 </time>AM </small>
-                	</div>
-                	<p style="background-color:#f5f6f7" id="comment-paragraph"></p>
-                </div>
-
-            </template>
+            
         </div>
         </div><!--Overall question and answer col end-->
 

@@ -1,5 +1,5 @@
 from django.db import models
-from user_signup.models import mentor_model
+from user_signup.models import mentor_model,mentee_model
 
 # Create your models here.
 class mentee_request_model(models.Model):
@@ -15,3 +15,12 @@ class mentee_request_model(models.Model):
     status = models.CharField(max_length=20)
     request_posted_time = models.DateTimeField()
     
+class mentor_request_model(models.Model):
+    mentor_id = models.IntegerField()
+    mentee_request = models.ForeignKey(mentee_request_model,on_delete=models.CASCADE)
+    mentee = models.ForeignKey(mentee_model,on_delete=models.CASCADE)
+    status = models.CharField(max_length=20)
+
+class mentor_mentee_model(models.Model):
+    mentor = models.ForeignKey(mentor_model,on_delete=models.CASCADE)
+    mentee = models.ForeignKey(mentee_model,on_delete=models.CASCADE)
