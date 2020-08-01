@@ -4,6 +4,10 @@ from django.http import Http404,HttpResponse
 # Create your views here.
 
 
+def copyrights(request):
+    return render(request,'schemes/copyrights.html')
+
+    
 def government_schemes_view(request):
     schemes_head = scheme.objects.all().values_list('id','head')
     scheme_tup = []

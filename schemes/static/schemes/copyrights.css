@@ -1,0 +1,9 @@
+h5,h6{
+	font-weight:bold;
+}
+
+@media only screen and (max-width:992px){
+	p{
+		font-size:14px;
+	}
+}

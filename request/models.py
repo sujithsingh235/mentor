@@ -9,11 +9,12 @@ class mentee_request_model(models.Model):
     description = models.TextField()
     hours_per_day = models.IntegerField()
     no_of_days = models.IntegerField()
-    from_time = models.TimeField()
-    to_time = models.TimeField()
+    from_time = models.CharField(max_length=20)
+    to_time = models.CharField(max_length=20)
     note = models.TextField(blank=True)
     status = models.CharField(max_length=20)
     request_posted_time = models.DateTimeField()
+
     
 class mentor_request_model(models.Model):
     mentor_id = models.IntegerField()

@@ -45,7 +45,8 @@ INSTALLED_APPS = [
     'homepage',
     'schemes',
     'news',
-    'request'
+    'request',
+    'pay'
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'

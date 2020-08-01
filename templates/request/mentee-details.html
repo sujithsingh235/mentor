@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block header %}
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+    <style>
+    h4,h5{
+	    font-weight:700;
+    } 
+    </style>
+{% endblock %}
+{% block content %}
+<div class="modal fade p-0" id="mentee-details" style="overflow-y:scroll">
+    <div class="modal-dialog modal-lg m-0 m-sm-auto" id="mentee-details-modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h4 class="modal-title">Mentee Details :</h4>
+				<button type="button" class="close" data-dismiss="modal">&times;</button>
+			</div>
+		    <div class="modal-body">
+			    <h4>Project Title :</h4>
+			    <p>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{request.mentee_request.title}}</p>
+			    <h4>Project Description :</h4>
+			    <p style="line-height:30px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{request.mentee_request.description}}</p>
+            
+                <h4>Working hours per day :</h4>
+                <p>{{request.mentee_request.hours_per_day}}</p>
+                                	
+                <h4>Working Time :</h4>
+                <ul>
+                    <li><h6 class="d-inline-block">From&nbsp;:</h6>&nbsp;{{request.mentee_request.from_time}}</li>
+                    <li><h6 class="d-inline-block">To&nbsp;:</h6>&nbsp;{{request.mentee_request.to_time}}</li>
+                </ul>
+                <h4>No of Days needed :</h4>
+                <p>{{request.mentee_request.no_of_days}}</p>
+                {% if request.mentee_request.note|length > 0%}
+                    <h4>Note&nbsp;:</h4>
+                    <p style="line-height:30px">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{request.mentee_request.note}}</p>
+                {% endif %}
+                <div class="d-flex justify-content-center justify-content-sm-end">
+            	    <button type="button" class="btn btn-warning mx-2">Cancel</button>
+            	    <button type="button" class="btn btn-danger" id="reject-button-in-mentor-request">Reject</button>
+            	    <a href="{{request.mentee_request.id}}/accept/{{request.mentee_id}}" type="button" class="btn btn-success mx-2">Accept</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="reason-modal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+            	<h4 class="modal-title">Reason&nbsp;<small>(optional)</small></h4>
+            	<button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+            	<div class="form-group">
+            		<label for="modal-for-reason" style="font-weight:700">Reason to reject : </label>
+            		<textarea class="form-control" rows="3" id="modal-for-reason" placeholder="Enter here..."></textarea>
+            	</div>
+            	<div class="d-flex justify-content-end">
+            		<button type="button" class="btn btn-primary mx-2" id="back-in-reason">Back</button>
+            		<button type="button" class="btn btn-success" id="reject-in-modal-reason">Reject</button>
+            	</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script>
+	
+	$(document).ready(function(){
+        $("#mentee-details").modal();
+        
+        $("#reject-button-in-mentor-request").click(function(){
+        	$("#mentee-details").modal("hide");
+        	$("#reason-modal").modal("show");
+        });
+
+        $("#back-in-reason").click(function(){
+           $("#reason-modal").modal("hide");
+           $("#mentee-details").modal("show");
+        });
+
+	});
+</script>
+{% endblock %}

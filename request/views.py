@@ -127,10 +127,12 @@ def request_brief_view(request,request_id):
     id = request.session.get('id')
     req = mentor_request_model.objects.get(mentee_request_id=request_id)
     print(req)
+    # req.mentee_request.from_time = time_convert(req.mentee_request.from_time)
+    # req.mentee_request.from_time = time_convert(req.mentee_request.to_time)
     context = {
         'request' : req
     }
-    return render(request,'request/request_brief.html',context)
+    return render(request,'request/mentee-details.html',context)  # request_brief
 
 
 @login_required
@@ -143,10 +145,12 @@ def mentor_requests_view(request):
         return redirect('/')
     mentor_request = mentor_request_model.objects.filter(mentor_id=id)
     print(mentor_request)
+    for req in mentor_request:
+        req.mentee_request.request_posted_time = time_convert(req.mentee_request.request_posted_time)
     context = {
         'requests' : mentor_request
     }
-    return render(request,'request/mentor_request.html',context)
+    return render(request,'request/mentor-request.html',context)
 
 
 def mentor_oper_view(request,oper,mentee_id,request_id):
