@@ -1,21 +1,86 @@
 {% extends 'base.html' %}
-
 {% block content %}
+	<div class="container shadow">
+		<div class="sansserif my-2" id="comment-workplace" style="height:50vh;overflow-y:scroll !important">
+			{% if exist %}
+			{% for comment in comments %}
+			<!--comments div start-->
+			<div id="comment-template" class="m-2">
+				<div class="d-flex comment-profile-div my-2">
+					<small class="comment-username font-weight-bold text-muted">@{{comment.user}}</small>
+					<small class="ml-auto text-muted">{{comment.posted_time}}</small>
+				</div>
+				<p style="background-color:#f5f6f7" id="comment-paragraph">{{comment.comment}}</p>
+			</div>
+			{% endfor %}
+			{% else %}
+			<div class="d-flex justify-content-center align-items-center" style="height:50vh">
+				<h1 class="font-weight-bold">No Comments</h1>
+			</div>
+			{% endif %}
+		</div>
+		<!--comments div part end-->
+		<form method="POST">
+			{% csrf_token %}
+		<div class="row mx-0">
+			<textarea name="comment" required="required" class="form-control" placeholder="Enter the comment..." id="comment-textarea" rows="5"></textarea>
+			<div class=" my-2 ml-auto">
+				<button type="button" class="btn btn-danger" id="reset-in-comment">Reset</button>
+				<input type="submit" class="btn btn-primary" id="post-in-comment" value="Post">
+			</div>
+		</div>
+		</form>
+	</div>
 
-    <center><h2>Comment's page</h2></center>
-    <h2>Comments</h2>
-    {% if exist %}
-        {% for comment in comments %}
-            <h6>{{comment.comment}}</h6>
-            <p>Posted by: {{comment.user}}</p>
-            <p>Posted time: {{comment.posted_time}}</p>
-        {% endfor %}    
-    {% else %}
-        <h4>No comments</h4>
-    {% endif %}
-        <form method="POST">
-            {% csrf_token %}
-            <textarea required="required" name="comment" rows=10 cols=40 placeholder="Enter your comments here....."></textarea></br>
-            <input type="submit">
-        </form>
+
+	<script>
+		function add_value() {
+			var a = document.getElementsByTagName("template")[0];
+			var b = a.content.cloneNode(true);
+			var c = b.querySelector("#comment-paragraph");
+			c.textContent = $("#comment-textarea").val();
+			$("#comment-workplace").append(b).ready(function () {
+				responsive();
+				scroll_function(); l
+			});
+
+			$("#comment-textarea").val("").focus();
+		}
+
+		function responsive() {
+			if ($(window).width() <= 575 && $(".comment-username").text().length >= 8) {
+				$(".comment-profile-div").addClass("flex-column");
+			}
+			else {
+				$(".comment-profile-div").removeClass("flex-column");
+			}
+		}
+
+
+		$("#post-in-comment").click(function () {
+			if ($("#comment-textarea").val().length > 0) {
+				add_value();
+			}
+		});
+
+		$("#comment-textarea").keypress(function (event_object) {
+			if ($("#comment-textarea").val().length > 0 && event_object.which == 13) {
+				add_value();
+				event_object.preventDefault();
+			}
+		});
+
+		$("#reset-in-comment").click(function () {
+			$("#comment-textarea").val("").focus();
+		});
+
+		function scroll_function() {
+			var a = document.getElementById("comment-workplace");
+			var b = a.scrollHeight;
+			var c = a.clientHeight;
+			$("#comment-workplace").scrollTop(b - c);
+		}
+
+
+	</script>
 {% endblock %}

@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+  {% load static %}
+{% block header %}
+	<link rel="stylesheet" href="{% static 'schemes/schemes.css'%}"><!--External css-->
+	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous"><!--Font awesome link-->
+{% endblock %}
+
+{% block content %}
+	<div class="container-fluid"><!--container-fluid start-->
+	   <div class="row" id="card-schemes"><!--Group of cards row start-->
+		
+		{% for id,head,abb in schemes %}
+		<div class="col-12 col-sm-6 col-md-4 card"><!--Card  --start-->
+			<div class="card-body">
+				<p>{{head}}</p>
+				{% if not abb is None %}
+					<strong>{{abb}}</strong>
+				{% endif %}
+				<a href="{{id}}" class="btn btn-light explore" style="visibility:hidden">Explore</a>
+			</div>
+		</div><!--card --end-->
+		{% endfor %}
+
+	</div><!--Group of cards row --end-->
+</div><!--conatiner-fluid--end-->
+
+	<script>
+		$(document).ready(function(){
+			
+          $(".card").mouseenter(function(){
+             $(this).addClass("unique");
+             $(this).find(".explore").css("visibility","visible");
+         });
+
+          $(".card").mouseleave(function(){
+          	$(this).removeClass("unique");
+          	$(this).find(".explore").css("visibility","hidden");
+          });
+
+          $(".explore").mouseenter(function(){
+          	$(this).css("background-color","#ff6633");
+          });
+
+          $(".explore").mouseleave(function(){
+          	$(this).css("background-color","white");
+          });
+		});
+	</script>
+{% endblock %}

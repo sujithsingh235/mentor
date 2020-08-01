@@ -1,0 +1,92 @@
+{% extends 'base.html' %}
+{%load static%}
+{% block header %}
+  <link rel="stylesheet" href="{% static 'schemes/schemes_explain.css' %}"><!--External css-->
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous"><!--font awesome-->
+{% endblock %}
+{% block content %}
+	<div class="container-fluid" style="background-color:#f2f2f2"><!--container-fluid start-->
+		<div class="row"><!--Schemme definition  row start-->
+		    <div class="col-12 col-lg-8 mx-lg-5 p-4 border" style="font-size:17px;background-color:#ffffff"><!--Scheme definition column start-->
+		        <strong class="main-heading">{{scheme.head}}</strong>
+		        <br><br>
+		        
+		        <div>
+		        <strong>Launched In : </strong>
+		        <p>{{scheme.Launched_in}}</p></div>
+		        <br><br>
+
+		        <div>
+		        <strong>Headed by : </strong>
+		        <p>{{scheme.Headed_by}}</p></div>
+		        <br><br>
+
+		        <div>
+		        <strong>Industry Applicable : </strong>
+		        <p>{{scheme.Industry_applicable}}</p></div>
+		        <br><br>
+
+		        <div>
+		        <strong>Eligible For : </strong>
+		        <p>{{scheme.Eligible_for}}</p></div>
+		        <br><br>
+
+		        <div>
+		        <strong>Overview : </strong>
+		        <p>{{scheme.Overview}}</p></div>
+		        <br><br>
+
+		        <div>
+		        <strong>Fiscal Incentives : </strong>
+		        <p>{{scheme.Fiscal_incentives}}</p></div>
+		        <br><br>
+
+		        <div>
+		        <strong>Time Period : </strong>
+		        <p>{{scheme.Time_period}}</p>
+		        </div>
+		        <br><br>
+				{% if link_exists %}
+				<div>
+					<p><em>To know more about this startup scheme by the Indian Government, click <a href="#">here</a></em></p>
+				</div>
+				{% endif %}
+		    </div><!--Scheme definition column end-->
+
+		    <div class="col-lg-3 border p-4 d-none d-lg-flex news position-fixed mr-5 flex-column justify-content-around " style="background-color:#ffffff;top:0px;right:0px;height:100%; "><!--More Scheme column start-->
+                
+                <!--Heading div start-->
+		    	<div class="text-center mb-4" style="border: 1px solid rgba(0,0,0,.125);border-radius: .25rem;">
+		    		<div class="card-header border-bottom-0">
+		    			<strong>More Schemes</strong>
+		    		</div>
+		    	</div><!--Heading div end-->
+
+			{% for scheme in extra_schemes %}
+		    	<div class="card">
+		    		<div class="card-body">
+		    			<p class="p-exceptional">{{scheme.head}}</p>
+				        <a href="./{{scheme.id}}" class="stretched-link"></a>
+				    </div>
+				</div>
+			{% endfor %}
+
+				
+		    </div><!--More schemes columns end-->
+		</div><!--Scheme definition row end-->
+	</div><!--container-fluid end-->
+
+	<script>
+		$(document).ready(function(){
+			$(".card").mouseenter(function(){
+				$(this).addClass("unique");
+			});
+
+			$(".card").mouseleave(function(){
+				$(this).removeClass("unique");
+			});
+		});
+	</script>
+{% endblock %}
+</html>

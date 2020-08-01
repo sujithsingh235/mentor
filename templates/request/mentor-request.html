@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% block header %}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+
+<style>
+	.title{
+		vertical-align:middle !important;
+	}
+	.table{
+		border:1px solid black !important;
+	}
+</style>
+{% endblock %}
+{% block content %}
+	<div class="container-fluid p-0 px-lg-3">
+		<div class="table-responsive">
+			<table class="table table-striped">
+				<thead class="thead-dark">
+					<tr>
+						<th>Token</th>
+						<th>Mentee</th>
+						<th>Project Title</th>
+						<th>Status</th>
+						<th>Date&nbsp;and&nbsp;Time</th>
+					</tr>
+				</thead>
+				<tbody>
+				{% for request in requests %}
+					<tr>
+					    <td>#{{request.id}}</td>
+					    <td><h6 class="name">{{request.mentee.name}}</h6><small class="text-muted">@{{request.mentee.username}}</small></td>
+						<td class="title"><a href="mentor_requests/{{request.mentee_request.id}}">{{request.mentee_request.title}}</a></td>
+						{% if request.status == 'accepted' %}
+							<td><h6><span class="badge badge-success badge-pill px-3 py-1">{{request.status}}</span></h6></td>
+						{% elif request.status == 'rejected' %}
+							<td><h6><span class="badge badge-danger badge-pill px-3 py-1">{{request.status}}</span></h6></td>
+						{% elif request.status == 'new' %}
+						<td><h6><span class="badge badge-primary badge-pill px-3 py-1">{{request.status}}</span></h6></td>
+						{% endif %}
+					    <td><time class="text-muted">{{request.mentee_request.request_posted_time}}</time></td>
+					</tr>
+				{% endfor %}
+			    </tbody>
+			</table>
+		</div>
+
+						
+	</div>
+{% endblock %}

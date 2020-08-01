@@ -1,0 +1,162 @@
+{% extends 'base.html' %} 
+{% load static %}
+{% block header %}
+    <link rel="stylesheet" href="{% static 'request/request.css' %}">  
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+    <style>
+        label{
+            font-weight:700;
+        }
+    </style>
+{% endblock %}
+{% block content %}
+{% csrf_token %}
+	<div class="container-fluid">
+		<button type="button" class="btn btn-info" data-toggle="modal" data-target="#request-modal">Open the request</button>
+		<div class="modal fade" id="request-modal">
+			<div class="modal-dialog modal-lg" id="dialog-remove-in-request">
+				<div class="modal-content">
+					<div class="modal-header">
+                        <h4>Request</h4>
+                        <button type="reset" class="close" id="close-in-request">x</button>
+					</div>
+					<div class="modal-body">
+		                <form action="#">
+			                <div class="form-group">
+				                <label for="title">Project Title :</label>
+				                <input type="text" class="form-control" id="title" required>
+			                </div>
+			                <div class="form-group">
+				                <label for="description">Project Description :</label>
+				                <textarea rows="5" class="form-control" id="description" required></textarea>
+			                </div>
+			                <label for="select-hours">Working hours per day :</label>
+			                <div class="input-group mb-4">
+				                <select class="form-control" id="select-hours" required>
+				                	<option></option>
+					                <option>1</option>
+					                <option>2</option>
+					                <option>3</option>
+					                <option>4</option>
+				                </select>
+				                <div class="input-group-append">
+					                <span class="input-group-text">hours per day</span>
+				                </div>
+			                </div>
+			                <label for="time-group" class="mb-2"><h5>Working-time :</h5></label>
+			                <div class="row form-group" id="time-group">
+			                	<div class="col">
+			                		<label for="from-time">From Time :</label>
+			                		<input type="time" class="form-control" id="from-time" required>
+			                	</div>
+			                	<div class="col">
+			                		<label for="to-time">To Time :</label>
+			                		<input type="time" class="form-control" id="to-time" required> 
+			                	</div>
+			                </div>
+
+			                <div class="form-group">
+			                	<label for="days">No of days needed :</label>
+			                	<input type="number" class="form-control" step="1" id="days" required>
+			                </div>
+			                <div class="form-group">
+			                	<label for="short-note-in-request">Note (optional):</label>
+			                	<textarea class="form-control" rows="5" id="short-note-in-request"></textarea>
+                            </div>
+                           
+                            <div class="d-flex justify-content-end">
+                            	<button type="reset" class="btn btn-warning btn-sm rounded-lg" id="cancel-in-request">Cancel</button>
+                            	<button type="button" onclick="post_data()" class="btn btn-success btn-sm mx-2 rounded-lg">Send a Request</button>
+                            </div>
+			            </form>
+			        </div>
+			    </div>
+			</div>
+		</div>
+	</div>
+	<script>
+        function post_data(){
+            var x = new XMLHttpRequest();
+            x.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                obj = JSON.parse(this.response);
+                status = obj.status;
+                if(status=='error'){
+                    alert(obj.message);
+                }
+                else if(status=='ok'){
+                    window.location = obj.url;
+                }
+            }
+        }
+        title = $('#title').val();
+        if(title.length == 0){
+            alert('title is empty');
+            return;
+        }
+        desc = $('#description').val();
+        if(desc.length == 0){
+            alert('description is empty');
+            return;
+        }
+        hours_per_day = $('#select-hours').val();
+        if(hours_per_day.length == 0){
+            alert('hour per day field is empty');
+            return;
+        }
+        no_of_days = $('#days').val();
+        if(no_of_days.length == 0){
+            alert('no of days field is empty');
+            return;
+        }
+        from = $('#from-time').val();
+        if(from.length == 0){
+            alert('from field is empty');
+            return;
+        }
+        to = $('#to-time').val();
+        if(to.length == 0){
+            alert('to field is empty');
+            return;
+        }
+        note = $('#short-note-in-request').val();
+        if(note.length == 0){
+            note = ""
+        }
+        csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        x.open('POST', '/request/{{mentor_id}}', true);
+        x.setRequestHeader('X-CSRFToken', csrftoken);
+        x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+        data = "title="+title+"&desc="+desc+"&hours_per_day="+hours_per_day+"&no_of_days="+no_of_days+"&from="+from+"&to="+to+"&note="+note;
+        x.send(data);
+    };
+		$(window).on("load",function(){
+			if($(window).width()<500){
+				$("#dialog-remove-in-request").removeClass("modal-dialog");
+			}
+			else{
+                $("#dialog-remove-in-request").addClass("modal-dialog");
+            }
+			});
+		$(document).ready(function(){
+				$("#request-modal").modal({backdrop:"static"});
+
+				$("#close-in-request").click(function(){
+					$("#request-modal").modal("hide");
+				});
+
+				$("#cancel-in-request").click(function(){
+					$("#request-modal").modal("hide");
+				});
+
+				$(window).resize(function(){
+					if($(window).width()<500){
+						$("#dialog-remove-in-request").removeClass("modal-dialog");
+					}
+					else{
+                        $("#dialog-remove-in-request").addClass("modal-dialog");
+					}
+                });
+		});
+	</script>
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends 'base.html' %}
+{% block content %}
+<center>request brief page</center>
+<p>{{request.mentee_request.title}}</p>
+<p>{{request.mentee_request.hours_per_day}}</p>
+<p>{{request.mentee_request.description}}</p>
+<p>===============================</p>
+{% if request.status == 'new' %}
+    <a href="{{request.mentee_request.id}}/accept/{{request.mentee_id}}" class="btn btn-outline-primary">Accept</a>
+    <a href="{{request.mentee_request.id}}/reject/{{request.mentee_id}}" class="btn btn-outline-primary">Reject</a>
+{% endif %}
+{% endblock %}

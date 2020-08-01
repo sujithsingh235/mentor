@@ -1,0 +1,421 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block header %}
+<link rel="stylesheet" href="{% static 'public_forum/question-brief.css' %}">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+{% endblock %}
+{% block content %}
+{% csrf_token %}
+	<div class="container-fluid my-2"><!--container-fluid start-->
+		
+		<div class="row"><!--The entire Question and answers section row start-->
+			
+
+			<div class="col-12  mx-sm-2 col-lg-7 ml-lg-5"><!--The main Question and answers col start-->
+				<div class="media"><!--media like flex content start-->
+					<img src="https://hk-23.github.io/sample/female-profile.png" class="rounded-circle bg-white mr-2" id="img-mentor" style="width: 60px;height: 55px;">
+					<div class="media-body sansserif">
+						<h5 class="font-weight-bold">{{question.name}} <small class="text-muted profile-small">@{{question.user}}</small></h5>
+						<h6 style="color:#999999;font-weight: 500"><time>{{question.posted_time}}</time></h6>
+					</div>
+
+					<i type="button" class="fas fa-star m-2" id="favorite-question" 
+					{% if fav %}  
+						style="color:#ffb700"
+        				onclick='remove_fav("{{question.id}}")'></i>
+					{% else %}
+						style="color:grey"
+        				onclick='add_to_fav("{{question.id}}")'></i>
+    				{% endif %}
+                    
+
+					<div class="dropdown dropleft">
+					    <i type="button" class="fas fa-ellipsis-v m-2" data-toggle="dropdown"></i>
+					    <div class="dropdown-menu">
+							<button  id="question_report_{{question.id}}" class="dropdown-item"
+							{% if question.id not in reported_questions %}
+								onclick="report('{{question.id}}','add_report','question')">Report</button>
+							{% else %}
+        						onclick="report('{{question.id}}','remove_report','question')">Remove report</button>
+							{% endif %}
+							{% if question.user == current_user %}
+								<button onclick="set('{{question.id}}','question')" class="dropdown-item delete">Delete</a>
+							{% endif %}
+					    </div>
+					</div>
+				</div><!--media like content end-->
+
+		        <h3 class="mt-3 sansserif font-weight-bold">{{question.question}}</h3>
+				<hr style="height:1px;background-color:#ccccb2;">
+		        <div class="description sansserif"><!--Question div description start-->
+		        	<p>{{question.description}}</p>
+		        </div><!--Question description div end-->
+				
+					<div><!--Tag div start-->
+					{% for tag in tags %}	
+						<h5 class="d-inline-block mx-1"><span class="badge badge-primary badge-pill">{{tag}}</span></h5>
+					{% endfor %}
+					</div><!--Tag end-->
+                <br>
+		       
+                <div class="m-3"><!--post answer and upvote question div start-->
+
+                    <button type="button" class="btn btn-primary mr-4" data-toggle="collapse" data-target="#post-your-answer" id="answer-dropdown-button">Add an answer
+		        	<i class="fas fa-caret-down ml-1" id="answer-dropdown-icon"></i></button>
+
+		            
+		        </div> <!--post answer and upvote question div start-->
+
+		        <div class="collapse m-2" id="post-your-answer"><!--post your answer div start-->
+		        	<textarea class="form-control" rows="5" id="answer-textbox" placeholder="Enter your answers here..."></textarea>
+		        	<div class="float-right mt-2">
+		        	    <button type="button" class="btn btn-warning" id="cancel">Reset</button>
+		        	    <button type="button" onclick="new_answer('{{question.id}}')" class="btn btn-success">Submit</button>
+		            </div>
+		        </div><!--Post your answer div end-->
+		        
+		<br><br>       
+		    <div>
+		        <h4>Answers ({{answers|length}})</h4>
+				<hr style="height:1px;background-color:#ccccb2;">
+				{% if answers|length != 0 %}
+				{% for answer,no_of_comments,no_of_likes,liked_users in answers %}
+                <div class="media"><!--media start-->
+		            <img src="https://hk-23.github.io/sample/female-profile.png" class="rounded-circle bg-white" id="img-mentor" style="width: 60px;height: 55px;">
+                    <div class="media-body mx-2 sansserif"><!--media body start-->
+                        <h5 class="font-weight-bold">{{answer.name}}, <small class="text-muted profile-small"> @{{answer.user}}</small></h5>
+                        <h6 style="color:#999999;font-weight: 500">Answered {{answer.posted_time}}</h6>
+                    </div><!--media body end-->
+
+                    <div class="dropdown dropleft"><!--dropdown of report start-->
+					    <i type="button" class="fas fa-ellipsis-v m-2" data-toggle="dropdown"></i>
+					    <div class="dropdown-menu">
+							<button id="answer_report_{{answer.id}}" class="dropdown-item"
+							{% if answer.id not in reported_answers %}
+       							onclick="report('{{answer.id}}','add_report','answer')">Report</button>
+    						{% else %}
+        						onclick="report('{{answer.id}}','remove_report','answer'">Remove report</button>
+							{% endif %}
+							{% if answer.user == current_user %}
+								<button onclick="set('{{answer.id}}','answer')" class="dropdown-item delete">Delete</button>
+							{% endif %}
+					    </div>
+					</div><!--dropdown of edit report end-->
+
+				</div><!--media end-->
+                
+                <div class="sansserif description p-4" style="background-color: #dbdbc9"><!--answer div start-->
+                    <p>{{answer.answer}}</p>
+                </div><!--answers div end-->
+                
+                
+
+                <div class="m-3">   <!--comment button and upvote div start-->
+                    <a href="comments/{{answer.id}}" class="btn btn-info mr-4"><span class="badge badge-light mr-1 mt-1">{{no_of_comments}}</span> Comments </a>
+				
+				{% if current_user != answer.user %}  <!--The like option should not be available for the creator of that answer-->
+					<i id="like_id_{{answer.id}}" class="fas fa-thumbs-up like-button" type="button" 
+					{% if current_user not in liked_users %}
+						style="font-size:23px;font-weight:500;"
+						onclick="add_like('{{answer.id}}','{{no_of_likes}}')">
+					{% else %}
+						style="font-size:23px;font-weight:600;color:blue"
+						onclick="remove_like('{{answer.id}}','{{no_of_likes}}')">
+					{% endif %}
+					</i>
+					<p id="like_count_id_{{answer.id}}" class="d-inline ml-2">{{no_of_likes}}</p>
+				</div><!--comment button and upvote div end-->
+				{% else %}
+					<i class="fas fa-thumbs-up like-button" type="button" style="font-size:23px;font-weight:600;color:blue"></i>
+					<p id="like_count_id_{{answer.id}}" class="d-inline ml-2">{{no_of_likes}}</p>
+				</div><!--comment button and upvote div end-->
+				{% endif %}
+			{% endfor %}
+			{% else %}
+            <div class="d-flex justify-content-center align-items-center" style="height:200px;border:1px solid grey">
+            	<h5>No answers yet</h5>
+			</div>
+			{% endif %}
+
+            <div class="modal" id="modal-delete">
+            	<div class="modal-dialog">
+            		<div class="modal-content">
+            			<div class="modal-body">
+            	            <h6>Are you sure want to delete?</h6>
+            	            <div class="float-right">
+            	                <button type="button" class="btn btn-warning" id="cancel-close-modal">Cancel</button>
+            	                <button onclick="location.href='';" class="btn btn-primary" id="ok-close-modal">Ok</button>
+            	            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            
+        </div>
+        </div><!--Overall question and answer col end-->
+
+        <div class="col-4 d-none d-lg-block">
+        	<div class="sticky-top card shadow">
+        		<div class="card-body">
+					{% if relevant_questions|length > 0%}
+        				<h4 class="card-title">Related Questions</h4>
+						{% for question in relevant_questions %}
+							<a href="./{{question.id}}">{{question.question}}</a>
+						{% endfor %}
+					{% else %}
+						<h4 class="card-title">No Related Questions</h4>
+					{% endif %}
+        		</div>
+        	</div>
+        </div>
+
+    </div><!--Overall row end-->
+</div><!--container-fluid end-->
+     
+
+    <script>
+		function set(id,type){
+			if(type == "answer"){
+				link = "location.href=./delete_answer?answer_id="+id+"&question_id={{question.id}};";
+				$('#ok-close-modal').attr('onclick',link); 
+			}
+			if(type == "question"){
+				link = "location.href=./delete_question/"+id+";";
+				$('#ok-close-modal').attr('onclick',link); 
+			}
+		}
+		function new_answer(id){
+			var x = new XMLHttpRequest();
+        	x.onreadystatechange = function () {
+            if (this.readyState == 4 && this.status == 200) {
+                window.location = this.responseURL;
+			}
+			else if(this.readyState == 4){
+				alert('something went wrong');
+			}
+        };
+        csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+        x.open('POST', '/public/forum/write_answer/'+id, true);
+        x.setRequestHeader('X-CSRFToken', csrftoken);
+        x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+		ans = $('#answer-textbox').val();
+		x.send('ans='+ans);
+		}
+		function add_like(answer_id,like)
+		{
+			like = parseInt(like) + 1;
+			var x = new XMLHttpRequest();
+			x.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					//if the user didnt login, the response text will not be success . Then we will redirect to login page.
+					if (this.responseText != 'success') {       
+						window.location = this.responseURL;
+					}
+					else if(this.responseText == 'success'){
+						$('#like_id_'+answer_id).css('font-weight',600);
+						$('#like_id_'+answer_id).css("color","Blue");
+						param = "remove_like("+answer_id+","+like+")";
+						$('#like_id_'+answer_id).attr("onclick",param);
+						$("#like_count_id_"+answer_id).html(like);
+					}
+				}
+				else if (this.readyState == 4 && this.status == 400){
+						alert('Something went wrong.')
+				}
+			};
+			csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+			x.open('POST', '/public/forum/add_like', true);
+			x.setRequestHeader('X-CSRFToken', csrftoken);
+			x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			x.send("answer_id=" +answer_id);
+		}
+		//The below function is for remove like
+		function remove_like(answer_id,like)
+		{
+			like = parseInt(like) - 1;
+			var x = new XMLHttpRequest();
+			x.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					//if the user didnt login, the response text will not be success . Then we will redirect to login page.
+					if (this.responseText != 'success') {       
+						window.location = this.responseURL;
+					}
+					else if(this.responseText == 'success'){
+						$('#like_id_'+answer_id).css('font-weight',500);
+						$('#like_id_'+answer_id).css("color","black");
+						param = "add_like("+answer_id+","+like+")";
+						$('#like_id_'+answer_id).attr("onclick",param);
+						$("#like_count_id_"+answer_id).html(like);						
+					}
+				}
+				else if (this.readyState == 4 && this.status == 400){
+					alert('Something went wrong.')
+				}
+			};
+			csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+			x.open('POST', '/public/forum/remove_like', true);
+			x.setRequestHeader('X-CSRFToken', csrftoken);
+			x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			x.send("answer_id=" +answer_id);
+		}
+    	$(document).ready(function(){
+
+    		function add_value(){
+    			var a=document.getElementsByTagName("template")[0];
+            	var b=a.content.cloneNode(true);
+            	var c=b.querySelector("#comment-paragraph");
+            	c.textContent=$("#comment-textbox").val();
+            	$("#comment-workplace").append(b).ready(function(){
+            	responsive();
+            	});
+
+            	var a=$("#comment-workplace").innerHeight();
+            	var b=document.getElementById("comment-workplace").scrollHeight;
+            	$("#comment-workplace").scrollTop(b-a);
+            	$("#comment-textbox").val("").focus();
+    		}
+
+    		function responsive(){
+    			if($(window).width()<=575 && $(".comment-username").text().length>=8){
+                    $(".comment-profile-div").addClass("flex-column");
+            	}
+                else{
+            		$(".comment-profile-div").removeClass("flex-column");
+            	} 
+            }
+
+            function responsive_in_profile(){
+            	if($(window).width()<576){
+            		$(".profile-small").addClass("d-block");
+            	}
+            	else{
+            		$(".profile-small").removeClass("d-block");
+            	}
+            }
+
+            $("#cancel").click(function(){
+            	$("#answer-textbox").val("");
+            	$("#answer-textbox").focus();
+            });
+         
+            $("#answer-dropdown-button").click(function(){
+            	$("#answer-dropdown-icon").toggleClass("rotation");
+            });
+
+            $("#enter-the-comment").click(function(){
+            	if($("#comment-textbox").val().length>0){
+            	  add_value();
+               }
+            });
+
+            $("#comment-textbox").keypress(function(event_object){
+            	if($("#comment-textbox").val().length>0 && event_object.which==13){
+            		add_value();
+            	}
+            });
+
+            $(".delete").click(function(){
+                $("#modal-delete").modal({backdrop:"static"});
+            });
+
+            $("#cancel-close-modal").click(function(){
+            	$("#modal-delete").modal("hide");
+            });
+            $("#ok-close-modal").click(function(){
+            	$("#modal-delete").modal("hide");
+            });
+
+            $(window).resize(function(){
+            	responsive();
+            	responsive_in_profile();
+            });
+
+            $(window).on("load",function(){
+            	responsive();
+            	responsive_in_profile();
+            });
+
+		});
+		function add_to_fav(id)      // This code is for fav
+		{
+			var x = new XMLHttpRequest();
+			x.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					if (this.responseText != 'success') {       //if the user didnt login, the response text will not be success . Then we will redirect to login page.
+						window.location = this.responseURL;
+					}
+					else if(this.responseText == 'success'){
+						$('#favorite-question').css("color","#ffb700");
+						$('#favorite-question').attr('onclick','remove_fav("{{question.id}}")');
+					}
+				}
+				else if (this.readyState == 4 && this.status == 200){
+					alert('Something went wrong.');
+				}
+			};
+			csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+			x.open('POST', '/public/forum/fav_add', true);
+			x.setRequestHeader('X-CSRFToken', csrftoken);
+			x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			x.send("question_id=" + id);
+		}
+		function remove_fav(id)      // This code is for removing fav
+		{
+			var x = new XMLHttpRequest();
+			x.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					//if the user didnt login, the response text will not be success . Then we will redirect to login page.
+					if (this.responseText != 'success') {       
+						window.location = this.responseURL;
+					}
+					else 
+					if(this.responseText == 'success'){
+						$('#favorite-question').css('color','grey');
+						$('#favorite-question').attr('onclick','add_to_fav("{{question.id}}")')
+					}
+				}
+				else if (this.readyState == 4 && this.status == 400){
+					alert('Something went wrong.')
+				}
+			};
+			csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+			x.open('POST', '/public/forum/fav_remove', true);
+			x.setRequestHeader('X-CSRFToken', csrftoken);
+			x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			x.send("question_id=" + id);
+		}
+		function report(id,operation,QorA)
+		{
+			var x = new XMLHttpRequest(); 
+			element_id = QorA+"_report_"+id;
+			x.onreadystatechange = function () {
+				if (this.readyState == 4 && this.status == 200) {
+					//if the user didnt login, the response text will not be success . Then we will redirect to login page.
+					if (this.responseText != 'success') {       
+						window.location = this.responseURL;
+					}
+					else if(this.responseText == 'success'){
+					   handle = $("#"+element_id);
+					   if(operation == "add_report"){
+							handle.html("Remove report");
+							param = "report('"+id+"','remove_report','"+QorA+"')";
+							handle.attr('onclick',param);
+					   }
+					   else if(operation == "remove_report"){
+							handle.html("Report");
+							param = "report('"+id+"','add_report','"+QorA+"')";
+							handle.attr('onclick',param);   
+					   }
+					}
+				}
+			};
+			csrftoken = jQuery("[name=csrfmiddlewaretoken]").val();
+			x.open('POST', '/public/forum/report', true);
+			x.setRequestHeader('X-CSRFToken', csrftoken);
+			x.setRequestHeader('Content-type', 'application/x-www-form-urlencoded');
+			x.send("id="+id+"&operation="+operation+"&QorA="+QorA);
+		}
+    </script>
+{% endblock %}
+

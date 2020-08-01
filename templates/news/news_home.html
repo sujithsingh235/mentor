@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block header %}
+    <link rel="stylesheet" type="text/css" href="{% static 'news/news_home.css' %}">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css" integrity="sha384-lZN37f5QGtY3VHgisS14W3ExzMWZxybE1SJSEsQp9S+oqd12jhcu+A56Ebc1zFSJ" crossorigin="anonymous">
+{% endblock %}
+{% block content %}
+    <div class="container-fluid p-0">
+        <h3 class="text-center bg-info text-white p-2 mb-4">Events and News</h3>
+
+        <div class="container justify-content-center d-sm-flex align-items-center">
+            {% for topic,button_type in topics %}
+                {% if type == topic %}
+                    <a class="btn btn-{{button_type}} disabled m-1">{{topic|title}}</a>
+                {% else %}
+                    <a href="?type={{topic}}" class="btn btn-outline-{{button_type}} m-1">{{topic|title}}</a>
+                {% endif %}
+            {% endfor %}
+            <a href="./request_news" class="btn btn-primary m-1">Refresh&nbsp;<i class="fas fa-redo-alt"></i></a>
+        </div>
+
+        <div class="container my-2 py-2">
+            <div class="row">
+               {% for news in news %}
+                <a target="_blank" class="col-lg-4 col-md-6 col-sm-6 d-flex justify-content-center my-2 unstyled-link" href="{{news.url}}">
+                    <div class="card">
+                        <img src="{{news.url_to_image}}"
+                            class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">{{news.title}}</h5>
+                            <p class="card-text">{{news.content}}
+                            </p>
+                        </div>
+                        <div class="card-footer row m-0 pb-0">
+                            <div class="col p-0">
+                                <h6 class="card-title">{{news.author}}</h6>
+                            </div>
+                            <small class="text-muted float-right">{{news.published_at}}</small>
+                        </div>
+                    </div>
+                </a>
+            {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
